@@ -1,2 +1,9 @@
 # AMOV
-Cross-platform mobile app exploring authentication, data persistence, and responsive UI.
+
+This is a **school project** for academic purposes.  
+
+---
+
+## 👥 Team
+- [Gonçalo Almeida](https://github.com/GAlmeida150815)  
+- [Álvaro](https://github.com/alvcabper1)
