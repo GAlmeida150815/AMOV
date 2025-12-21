@@ -1,4 +1,4 @@
-package pt.isec.ans.safetysec
+package pt.isec.ans.tp
 
 import org.junit.Test
 

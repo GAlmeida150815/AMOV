@@ -1,4 +1,4 @@
-package pt.isec.ans.safetysec.model
+package pt.isec.ans.tp.model
 
 class SafetyRule(
     var name: String,

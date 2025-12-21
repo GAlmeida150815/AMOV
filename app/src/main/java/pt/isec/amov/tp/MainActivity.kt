@@ -1,4 +1,4 @@
-package pt.isec.ans.safetysec
+package pt.isec.ans.tp
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,8 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import pt.isec.ans.safetysec.ui.theme.SafetYSecTheme
-import pt.isec.ans.safetysec.ui.screens.LoginScreen
+import pt.isec.ans.tp.ui.theme.SafetYSecTheme
+import pt.isec.ans.tp.ui.screens.LoginScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

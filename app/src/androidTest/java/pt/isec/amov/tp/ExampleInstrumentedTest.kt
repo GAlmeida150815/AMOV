@@ -1,4 +1,4 @@
-package pt.isec.ans.safetysec
+package pt.isec.ans.tp
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

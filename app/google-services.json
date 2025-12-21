@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "62162519632",
+    "project_id": "isec-amov-tp",
+    "storage_bucket": "isec-amov-tp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62162519632:android:f984cb937e545fe57a7355",
+        "android_client_info": {
+          "package_name": "pt.isec.amov.tp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSl4dU6j1AC-BcMMkSADj2ufW-xbxKNjk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SafetYSec"
+rootProject.name = "AMOV_TP"
 include(":app")
  

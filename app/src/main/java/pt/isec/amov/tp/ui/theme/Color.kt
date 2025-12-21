@@ -1,4 +1,4 @@
-package pt.isec.ans.safetysec.ui.theme
+package pt.isec.ans.tp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
