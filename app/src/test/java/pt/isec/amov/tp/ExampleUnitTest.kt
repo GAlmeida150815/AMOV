@@ -1,4 +1,4 @@
-package pt.isec.ans.tp
+package pt.isec.amov.tp
 
 import org.junit.Test
 
