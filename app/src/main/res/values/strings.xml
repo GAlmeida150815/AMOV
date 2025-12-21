@@ -1,3 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
-    <string name="app_name">SafetYSec</string>
+    <string name="app_name" translatable="false">SafetYSec</string>
+
+    <string name="assoc_success">Association successful!</string>
+
+    <string name="btn_add_protected">Add Protected</string>
+    <string name="btn_associate">Associate</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_change_password">Change Password</string>
+    <string name="btn_close">Close</string>
+    <string name="btn_confirm_remove">Remove</string>
+    <string name="btn_edit_profile">Edit Profile</string>
+    <string name="btn_logout">Logout</string>
+    <string name="btn_remove">Remove</string>
+    <string name="btn_save">Save Changes</string>
+    <string name="btn_send_email">Send Email</string>
+
+    <string name="dialog_remove_monitor_msg">Stop sharing data with %1$s?</string>
+    <string name="dialog_remove_monitor_title">Remove Monitor</string>
+    <string name="dialog_remove_msg">Are you sure you want to stop monitoring %1$s? This action cannot be undone.</string>
+    <string name="dialog_remove_title">Remove Protected</string>
+
+    <string name="err_assoc_code_invalid">Invalid or expired code.</string>
+    <string name="err_assoc_generic">Association failed.</string>
+    <string name="err_assoc_length">Code must be 6 digits.</string>
+    <string name="err_assoc_remove">Error removing association: %1$s</string>
+    <string name="err_assoc_self">You cannot associate with yourself.</string>
+    <string name="err_auth_needed">Authentication required.</string>
+    <string name="err_cancel_code_invalid">Code must be 4–6 digits</string>
+    <string name="err_code_expired">Code expired. Ask the Monitor for a new one.</string>
+    <string name="err_field_empty">This field cannot be empty</string>
+    <string name="err_gen_code">Error generating code.</string>
+    <string name="err_invalid_email">Invalid email format</string>
+    <string name="err_login_generic">Login failed.</string>
+    <string name="err_no_profile">Error: No profile defined.</string>
+    <string name="err_password_short">Password too short (min 6)</string>
+    <string name="err_passwords_mismatch">Passwords do not match</string>
+    <string name="err_reauth_failed">Incorrect current password.</string>
+    <string name="err_register_generic">Registration failed.</string>
+    <string name="err_resend_failed">Failed to resend email.</string>
+    <string name="err_uid_null">Error: User ID is null.</string>
+    <string name="err_user_data_fetch">Failed to fetch user data.</string>
+
+    <string name="hint_enter_code">Enter 6-digit code</string>
+
+    <string name="lbl_cancel_code">Cancellation Code</string>
+    <string name="lbl_click_to_copy">(Click to copy)</string>
+    <string name="lbl_confirm_new_password">Confirm New Password</string>
+    <string name="lbl_current_password">Current Password</string>
+    <string name="lbl_email">Email (Not Editable)</string>
+    <string name="lbl_last_update">Last update: %1$s</string>
+    <string name="lbl_monitoring_active">Monitoring Active</string>
+    <string name="lbl_monitoring_paused">Monitoring Paused</string>
+    <string name="lbl_name">Name</string>
+    <string name="lbl_new_password">New Password</string>
+    <string name="lbl_stat_alerts">Alerts Sent</string>
+    <string name="lbl_stat_monitors">Monitors</string>
+    <string name="lbl_stat_protecteds">Protecteds</string>
+    <string name="lbl_stats">Statistics</string>
+    <string name="lbl_status_danger">Status: Alert!</string>
+    <string name="lbl_status_ok">Status: Secure</string>
+
+    <string name="login_button">Login</string>
+    <string name="login_email_label">Email</string>
+    <string name="login_forgot_password">Forgot your password?</string>
+    <string name="login_is_monitor_label">I am a Monitor</string>
+    <string name="login_password_label">Password</string>
+    <string name="login_success">Login successful!</string>
+    <string name="login_welcome">Welcome!</string>
+
+    <string name="mfa_error_verify_email">Please verify your email to login!</string>
+    <string name="mfa_resend_btn">Resend Verification Email</string>
+    <string name="mfa_resend_error">Error sending email: %1$s</string>
+    <string name="mfa_resend_success">Verification email sent!</string>
+
+    <string name="msg_assoc_removed_success">Association removed successfully.</string>
+    <string name="msg_code_copied">Code copied to clipboard!</string>
+    <string name="msg_enter_email_reset">Enter your email to receive a reset link.</string>
+    <string name="msg_login_success">Login successful!</string>
+    <string name="msg_monitor_removed">Monitor removed</string>
+    <string name="msg_monitor_started">Monitoring Started</string>
+    <string name="msg_monitor_stopped">Monitoring Stopped</string>
+    <string name="msg_no_active_alerts">No active alerts. Everything looks good.</string>
+    <string name="msg_no_monitors">No monitors associated.</string>
+    <string name="msg_no_protecteds">No protecteds associated yet.</string>
+    <string name="msg_not_sharing_location">No one can see your location.</string>
+    <string name="msg_password_updated">Password changed successfully!</string>
+    <string name="msg_perm_location_required">Location permission required</string>
+    <string name="msg_profile_updated">Profile updated successfully!</string>
+    <string name="msg_reg_success">Account created successfully!</string>
+    <string name="msg_reset_email_sent">Reset email sent! Check your inbox.</string>
+    <string name="msg_select_marker">Select a pin to see details.</string>
+    <string name="msg_share_code">Share this code with the Protected user:</string>
+    <string name="msg_sharing_location">Your location is being shared.</string>
+    <string name="msg_welcome">Welcome, %1$s</string>
+    <string name="msg_welcome_protected">Hello, %1$s. Feeling safe today?</string>
+
+    <string name="nav_history">History</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_map">Map</string>
+
+    <string name="notif_channel_name">Location Service</string>
+    <string name="notif_content_tracking">Sharing real-time location...</string>
+    <string name="notif_title_protected">Protected Mode Active</string>
+
+    <string name="profile_title">User Profile</string>
+
+    <string name="reg_already_has_account">Already have an account? Login</string>
+    <string name="reg_button">Sign Up</string>
+    <string name="reg_cancel_code">Cancellation Code (4–6 digits)</string>
+    <string name="reg_confirm_password_label">Confirm Password</string>
+    <string name="reg_name_label">Full Name</string>
+    <string name="reg_prompt">Don\'t have an account? Register</string>
+    <string name="reg_role_monitor">Register as Monitor</string>
+    <string name="reg_role_protected">Register as Protected</string>
+    <string name="reg_select_role">Select Your Role(s)</string>
+    <string name="reg_title">Create Account</string>
+
+    <string name="sect_alerts">Active Alerts</string>
+    <string name="sect_protecteds">My Protecteds</string>
+
+    <string name="tab_list">List</string>
+    <string name="tab_map">Map</string>
+    <string name="tab_monitor">Monitor</string>
+    <string name="tab_protected">Protected</string>
+
+    <string name="title_add_monitor">Add Monitor</string>
+    <string name="title_add_protected">Add Protected</string>
+    <string name="title_change_password">Change Password</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_map_all">Real-time Location</string>
+    <string name="title_my_monitors">My Monitors</string>
+    <string name="title_reset_password">Reset Password</string>
 </resources>

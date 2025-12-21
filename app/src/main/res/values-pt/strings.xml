@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="assoc_success">Associação com sucesso!</string>
+
+    <string name="btn_add_protected">Adicionar Protegido</string>
+    <string name="btn_associate">Associar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="btn_change_password">Alterar Palavra-passe</string>
+    <string name="btn_close">Fechar</string>
+    <string name="btn_confirm_remove">Remover</string>
+    <string name="btn_edit_profile">Editar Perfil</string>
+    <string name="btn_logout">Sair</string>
+    <string name="btn_remove">Remover</string>
+    <string name="btn_save">Guardar Alterações</string>
+    <string name="btn_send_email">Enviar Email</string>
+
+    <string name="dialog_remove_monitor_msg">Deseja deixar de partilhar dados com %1$s?</string>
+    <string name="dialog_remove_monitor_title">Remover Monitor</string>
+    <string name="dialog_remove_msg">Tem a certeza que deseja deixar de monitorizar %1$s? Esta ação é irreversível.</string>
+    <string name="dialog_remove_title">Remover Protegido</string>
+
+    <string name="err_assoc_code_invalid">Código inválido ou expirado.</string>
+    <string name="err_assoc_generic">Falha na associação.</string>
+    <string name="err_assoc_length">O código deve ter 6 dígitos.</string>
+    <string name="err_assoc_remove">Erro ao remover associação: %1$s</string>
+    <string name="err_assoc_self">Não pode ser Monitor de si próprio.</string>
+    <string name="err_auth_needed">Autenticação necessária.</string>
+    <string name="err_cancel_code_invalid">O código deve ter 4–6 dígitos</string>
+    <string name="err_code_expired">Código expirado. Peça um novo ao Monitor.</string>
+    <string name="err_field_empty">Este campo não pode estar vazio</string>
+    <string name="err_gen_code">Erro ao gerar código.</string>
+    <string name="err_invalid_email">Formato de email inválido</string>
+    <string name="err_login_generic">Falha no login.</string>
+    <string name="err_no_profile">Erro: Perfil não definido.</string>
+    <string name="err_password_short">Senha muito curta (mín 6)</string>
+    <string name="err_passwords_mismatch">As palavras-passe não coincidem</string>
+    <string name="err_reauth_failed">Palavra-passe atual incorreta.</string>
+    <string name="err_register_generic">Erro no registo.</string>
+    <string name="err_resend_failed">Error ao reenviar o email.</string>
+    <string name="err_uid_null">Erro: ID de utilizador nulo.</string>
+    <string name="err_user_data_fetch">Erro ao obter dados do utilizador.</string>
+
+    <string name="hint_enter_code">Insira o código de 6 dígitos</string>
+
+    <string name="lbl_cancel_code">Código de Cancelamento</string>
+    <string name="lbl_click_to_copy">(Clique para copiar)</string>
+    <string name="lbl_confirm_new_password">Confirmar Nova Palavra-passe</string>
+    <string name="lbl_current_password">Palavra-passe Atual</string>
+    <string name="lbl_email">Email (Não editável)</string>
+    <string name="lbl_last_update">Ult. atualização: %1$s</string>
+    <string name="lbl_monitoring_active">Monitorização Ativa</string>
+    <string name="lbl_monitoring_paused">Monitorização Pausada</string>
+    <string name="lbl_name">Nome</string>
+    <string name="lbl_new_password">Nova Palavra-passe</string>
+    <string name="lbl_stat_alerts">Alertas Enviados</string>
+    <string name="lbl_stat_monitors">Monitores</string>
+    <string name="lbl_stat_protecteds">Protegidos</string>
+    <string name="lbl_stats">Estatísticas</string>
+    <string name="lbl_status_danger">Estado: Alerta!</string>
+    <string name="lbl_status_ok">Estado: Seguro</string>
+
+    <string name="login_button">Entrar</string>
+    <string name="login_email_label">Correio Electrónico</string>
+    <string name="login_forgot_password">Esqueceu-se da palavra-passe?</string>
+    <string name="login_is_monitor_label">Sou Monitor</string>
+    <string name="login_password_label">Palavra-passe</string>
+    <string name="login_success">Login efetuado com sucesso!</string>
+    <string name="login_welcome">Bem-vindo!</string>
+
+    <string name="mfa_error_verify_email">Verifique o seu email para entrar!</string>
+    <string name="mfa_resend_btn">Reenviar Email de Verificação</string>
+    <string name="mfa_resend_error">Erro ao enviar: %1$s</string>
+    <string name="mfa_resend_success">Email de verificação reenviado!</string>
+
+    <string name="msg_assoc_removed_success">Associação removida com sucesso.</string>
+    <string name="msg_code_copied">Código copiado para a área de transferência!</string>
+    <string name="msg_enter_email_reset">Insira o seu email para receber um link de recuperação.</string>
+    <string name="msg_login_success">Login efetuado com sucesso!</string>
+    <string name="msg_monitor_removed">Monitor removido</string>
+    <string name="msg_monitor_started">Monitorização Iniciada</string>
+    <string name="msg_monitor_stopped">Monitorização Parada</string>
+    <string name="msg_no_active_alerts">Sem alertas ativos. Tudo tranquilo.</string>
+    <string name="msg_no_monitors">Sem monitores associados.</string>
+    <string name="msg_no_protecteds">Ainda sem protegidos associados.</string>
+    <string name="msg_not_sharing_location">Ninguém consegue ver a sua localização.</string>
+    <string name="msg_password_updated">Palavra-passe alterada com sucesso!</string>
+    <string name="msg_perm_location_required">Permissão de localização necessária</string>
+    <string name="msg_profile_updated">Perfil atualizado com sucesso!</string>
+    <string name="msg_reg_success">Conta criada com sucesso!</string>
+    <string name="msg_reset_email_sent">Email de recuperação enviado! Verifique a sua caixa de entrada.</string>
+    <string name="msg_select_marker">Selecione um pino para ver detalhes.</string>
+    <string name="msg_share_code">Partilhe este código com o Protegido:</string>
+    <string name="msg_sharing_location">A sua localização está a ser partilhada.</string>
+    <string name="msg_welcome">Bem-vindo, %1$s</string>
+    <string name="msg_welcome_protected">Olá, %1$s. Sente-se seguro hoje?</string>
+
+    <string name="nav_history">Histórico</string>
+    <string name="nav_home">Início</string>
+    <string name="nav_map">Mapa</string>
+    <string name="nav_profile">Perfil</string>
+
+    <string name="notif_channel_name">Serviço de Localização</string>
+    <string name="notif_content_tracking">A partilhar localização em tempo real...</string>
+    <string name="notif_title_protected">Modo Protegido Ativo</string>
+
+    <string name="profile_title">Perfil de Utilizador</string>
+
+    <string name="reg_already_has_account">Já tem conta? Entrar</string>
+    <string name="reg_button">Registar</string>
+    <string name="reg_cancel_code">Código de Cancelamento (4–6 dígitos)</string>
+    <string name="reg_confirm_password_label">Confirmar Palavra-passe</string>
+    <string name="reg_name_label">Nome Completo</string>
+    <string name="reg_prompt">Não tem conta? Registe-se</string>
+    <string name="reg_role_monitor">Registar como Monitor</string>
+    <string name="reg_role_protected">Registar como Protegido</string>
+    <string name="reg_select_role">Seleccione o(s) seu(s) Papel(is)</string>
+    <string name="reg_title">Criar Conta</string>
+
+    <string name="sect_alerts">Alertas Ativos</string>
+    <string name="sect_protecteds">Os Meus Protegidos</string>
+
+    <string name="tab_list">Lista</string>
+    <string name="tab_map">Mapa</string>
+    <string name="tab_monitor">Monitor</string>
+    <string name="tab_protected">Protegido</string>
+
+    <string name="title_add_monitor">Adicionar Monitor</string>
+    <string name="title_add_protected">Adicionar Protegido</string>
+    <string name="title_change_password">Alterar Palavra-passe</string>
+    <string name="title_dashboard">Painel de Controlo</string>
+    <string name="title_map_all">Localização em Tempo Real</string>
+    <string name="title_my_monitors">Os Meus Monitores</string>
+    <string name="title_reset_password">Redefinir Palavra-passe</string>
+</resources>
