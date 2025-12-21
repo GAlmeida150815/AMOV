@@ -1,9 +1,7 @@
-package pt.isec.ans.tp.model
+package pt.isec.amov.tp.model
 
-class SafetyRule(
+data class SafetyRule(
     var name: String,
     var description: String,
     var isActive: Boolean
-) {
-
-}
+)
