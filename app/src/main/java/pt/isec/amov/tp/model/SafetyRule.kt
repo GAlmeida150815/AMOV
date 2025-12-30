@@ -1,13 +1,5 @@
-package pt.isec.ans.safetysec.model
+package pt.isec.amov.tp.model
 
-<<<<<<< Updated upstream:app/src/main/java/pt/isec/ans/safetysec/model/SafetyRule.kt
-class SafetyRule(
-    var name: String,
-    var description: String,
-    var isActive: Boolean
-) {
-
-=======
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.PropertyName
@@ -43,5 +35,4 @@ data class SafetyRule(
 
         return timeWindows.any { it.isActiveNow() }
     }
->>>>>>> Stashed changes:app/src/main/java/pt/isec/amov/tp/model/SafetyRule.kt
 }
