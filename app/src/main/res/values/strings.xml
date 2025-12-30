@@ -1,5 +1,8 @@
-<?xml version="1.0" encoding="utf-8" standalone="no"?>
 <resources>
+<<<<<<< Updated upstream
+    <string name="app_name">SafetYSec</string>
+</resources>
+=======
     <string name="app_name" translatable="false">SafetYSec</string>
 
     <string name="assoc_success">Association successful!</string>
@@ -7,15 +10,42 @@
     <string name="btn_add_protected">Add Protected</string>
     <string name="btn_associate">Associate</string>
     <string name="btn_cancel">Cancel</string>
+    <string name="btn_cancel_alert">CANCEL ALERT</string>
     <string name="btn_change_password">Change Password</string>
     <string name="btn_close">Close</string>
     <string name="btn_confirm_remove">Remove</string>
+    <string name="btn_create_rule">Create Rule</string>
     <string name="btn_edit_profile">Edit Profile</string>
     <string name="btn_logout">Logout</string>
     <string name="btn_remove">Remove</string>
     <string name="btn_save">Save Changes</string>
     <string name="btn_send_email">Send Email</string>
+    <string name="btn_update_rule">Update Rule</string>
 
+    <string name="day_fri">Fri</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+
+    <string-array name="days_short">
+        <item>M</item>
+        <item>T</item>
+        <item>W</item>
+        <item>T</item>
+        <item>F</item>
+        <item>S</item>
+        <item>S</item>
+    </string-array>
+
+    <string name="desc_add_connection">Add Connection</string>
+    <string name="desc_add_rule">Add Rule</string>
+    <string name="desc_back">Go Back</string>
+
+    <string name="dialog_delete_rule_msg">Are you sure you want to delete the rule \"%1$s\"?</string>
+    <string name="dialog_delete_rule_title">Delete Rule</string>
     <string name="dialog_remove_monitor_msg">Stop sharing data with %1$s?</string>
     <string name="dialog_remove_monitor_title">Remove Monitor</string>
     <string name="dialog_remove_msg">Are you sure you want to stop monitoring %1$s? This action cannot be undone.</string>
@@ -29,8 +59,10 @@
     <string name="err_auth_needed">Authentication required.</string>
     <string name="err_cancel_code_invalid">Code must be 4–6 digits</string>
     <string name="err_code_expired">Code expired. Ask the Monitor for a new one.</string>
+    <string name="err_creating_rule">Error creating rule</string>
     <string name="err_field_empty">This field cannot be empty</string>
     <string name="err_gen_code">Error generating code.</string>
+    <string name="err_incorrect_code">Incorrect Code!</string>
     <string name="err_invalid_email">Invalid email format</string>
     <string name="err_login_generic">Login failed.</string>
     <string name="err_no_profile">Error: No profile defined.</string>
@@ -40,26 +72,53 @@
     <string name="err_register_generic">Registration failed.</string>
     <string name="err_resend_failed">Failed to resend email.</string>
     <string name="err_uid_null">Error: User ID is null.</string>
+    <string name="err_upload_video">Video upload failed</string>
     <string name="err_user_data_fetch">Failed to fetch user data.</string>
+    <string name="err_verify_code">Error verifying code</string>
+
+    <string name="fmt_duration">Max Inactivity: %1$s min</string>
+    <string name="fmt_radius">Radius: %1$s m</string>
+    <string name="fmt_speed">Max: %1$s km/h</string>
 
     <string name="hint_enter_code">Enter 6-digit code</string>
 
+    <string name="lbl_24h_active">Active 24h</string>
+    <string name="lbl_attention">ATTENTION!</string>
+    <string name="lbl_authorized">Authorized</string>
+    <string name="lbl_battery">Battery</string>
     <string name="lbl_cancel_code">Cancellation Code</string>
     <string name="lbl_click_to_copy">(Click to copy)</string>
     <string name="lbl_confirm_new_password">Confirm New Password</string>
+    <string name="lbl_created_by">Created by:</string>
     <string name="lbl_current_password">Current Password</string>
+    <string name="lbl_description">Description</string>
+    <string name="lbl_duration">Duration (minutes)</string>
     <string name="lbl_email">Email (Not Editable)</string>
+    <string name="lbl_end_h">End (H)</string>
+    <string name="lbl_enter_cancel_code">Enter code to cancel:</string>
+    <string name="lbl_everyday">Everyday</string>
     <string name="lbl_last_update">Last update: %1$s</string>
+    <string name="lbl_latitude">Latitude</string>
+    <string name="lbl_longitude">Longitude</string>
+    <string name="lbl_max_speed">Max Speed (km/h)</string>
+    <string name="lbl_max_speed_kmh">Max: %1$s km/h</string>
     <string name="lbl_monitoring_active">Monitoring Active</string>
     <string name="lbl_monitoring_paused">Monitoring Paused</string>
     <string name="lbl_name">Name</string>
     <string name="lbl_new_password">New Password</string>
+    <string name="lbl_radius">Radius (meters)</string>
+    <string name="lbl_radius_m">Radius: %1$s m</string>
+    <string name="lbl_rule_name">Rule Name</string>
+    <string name="lbl_rule_type">Rule Type</string>
+    <string name="lbl_select_protected">Select a Protected User</string>
+    <string name="lbl_start_h">Start (H)</string>
     <string name="lbl_stat_alerts">Alerts Sent</string>
     <string name="lbl_stat_monitors">Monitors</string>
     <string name="lbl_stat_protecteds">Protecteds</string>
     <string name="lbl_stats">Statistics</string>
     <string name="lbl_status_danger">Status: Alert!</string>
     <string name="lbl_status_ok">Status: Secure</string>
+    <string name="lbl_time_window">Time Window</string>
 
     <string name="login_button">Login</string>
     <string name="login_email_label">Email</string>
@@ -74,6 +133,9 @@
     <string name="mfa_resend_error">Error sending email: %1$s</string>
     <string name="mfa_resend_success">Verification email sent!</string>
 
+    <string name="msg_alert_cancelled">Alert Cancelled!</string>
+    <string name="msg_alert_detected">ALERT DETECTED!</string>
+    <string name="msg_alert_sent_video">Alert sent with video!</string>
     <string name="msg_assoc_removed_success">Association removed successfully.</string>
     <string name="msg_code_copied">Code copied to clipboard!</string>
     <string name="msg_enter_email_reset">Enter your email to receive a reset link.</string>
@@ -84,25 +146,34 @@
     <string name="msg_no_active_alerts">No active alerts. Everything looks good.</string>
     <string name="msg_no_monitors">No monitors associated.</string>
     <string name="msg_no_protecteds">No protecteds associated yet.</string>
+    <string name="msg_no_rules_protected">No safety rules defined.</string>
     <string name="msg_not_sharing_location">No one can see your location.</string>
+    <string name="msg_only_protected_auth">Only the protected user can authorize the rule.</string>
     <string name="msg_password_updated">Password changed successfully!</string>
     <string name="msg_perm_location_required">Location permission required</string>
+    <string name="msg_permissions_evidence">Permissions required to record evidence</string>
     <string name="msg_profile_updated">Profile updated successfully!</string>
+    <string name="msg_recording_evidence">RECORDING EVIDENCE…</string>
+    <string name="msg_recording_video_30s">Recording 30s video</string>
     <string name="msg_reg_success">Account created successfully!</string>
     <string name="msg_reset_email_sent">Reset email sent! Check your inbox.</string>
+    <string name="msg_rule_created_success">Rule created successfully!</string>
     <string name="msg_select_marker">Select a pin to see details.</string>
+    <string name="msg_sending_sos">SENDING SOS…</string>
     <string name="msg_share_code">Share this code with the Protected user:</string>
     <string name="msg_sharing_location">Your location is being shared.</string>
     <string name="msg_welcome">Welcome, %1$s</string>
     <string name="msg_welcome_protected">Hello, %1$s. Feeling safe today?</string>
 
+    <string name="nav_connections">Connections</string>
     <string name="nav_history">History</string>
     <string name="nav_home">Home</string>
-    <string name="nav_profile">Profile</string>
     <string name="nav_map">Map</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_sos" translatable="false">SOS</string>
 
     <string name="notif_channel_name">Location Service</string>
-    <string name="notif_content_tracking">Sharing real-time location...</string>
+    <string name="notif_content_tracking">Sharing real-time location…</string>
     <string name="notif_title_protected">Protected Mode Active</string>
 
     <string name="profile_title">User Profile</string>
@@ -118,6 +189,13 @@
     <string name="reg_select_role">Select Your Role(s)</string>
     <string name="reg_title">Create Account</string>
 
+    <string name="rule_car_accident">Car Accident</string>
+    <string name="rule_fall_detection">Fall Detection</string>
+    <string name="rule_geofencing">Geofencing</string>
+    <string name="rule_inactivity">Inactivity</string>
+    <string name="rule_panic_button">Panic Button</string>
+    <string name="rule_speed_limit">Speed Limit</string>
+
     <string name="sect_alerts">Active Alerts</string>
     <string name="sect_protecteds">My Protecteds</string>
 
@@ -128,9 +206,15 @@
 
     <string name="title_add_monitor">Add Monitor</string>
     <string name="title_add_protected">Add Protected</string>
+    <string name="title_add_rule">New Safety Rule</string>
     <string name="title_change_password">Change Password</string>
     <string name="title_dashboard">Dashboard</string>
+    <string name="title_details">User Details</string>
+    <string name="title_edit_rule">Edit Rule</string>
     <string name="title_map_all">Real-time Location</string>
     <string name="title_my_monitors">My Monitors</string>
+    <string name="title_my_protecteds">My Protecteds</string>
+    <string name="title_my_rules">Safety Rules</string>
     <string name="title_reset_password">Reset Password</string>
 </resources>
+>>>>>>> Stashed changes

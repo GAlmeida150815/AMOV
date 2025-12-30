@@ -3,6 +3,17 @@ agp = "8.13.2"
 kotlin = "2.0.21"
 coreKtx = "1.13.1"
 junit = "4.13.2"
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+junitVersion = "1.3.0"
+espressoCore = "3.7.0"
+lifecycleRuntimeKtx = "2.10.0"
+activityCompose = "1.12.1"
+composeBom = "2024.09.00"
+runtime = "1.9.5"
+=======
+>>>>>>> Stashed changes
 junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.8.2"
@@ -17,6 +28,12 @@ googleMapsCompose = "4.3.0"
 playServicesMaps = "18.2.0"
 playServicesLocation = "21.0.1"
 accompanist = "0.34.0"
+<<<<<<< Updated upstream
+=======
+camerax = "1.3.1"
+guava = "31.1-android"
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 [libraries]
 # Compose
@@ -39,6 +56,11 @@ androidx-compose-material3 = { group = "androidx.compose.material3", name = "mat
 androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended", version.ref = "materialIconsExtended" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 # Navegação
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
@@ -55,6 +77,19 @@ play-services-location = { group = "com.google.android.gms", name = "play-servic
 # Accompanist
 accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist" }
 
+<<<<<<< Updated upstream
+=======
+# CameraX
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+androidx-camera-video = { group = "androidx.camera", name = "camera-video", version.ref = "camerax" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
+androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensions", version.ref = "camerax" }
+google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
+
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
