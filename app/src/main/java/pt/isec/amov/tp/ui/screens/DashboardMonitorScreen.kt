@@ -45,6 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.isec.amov.tp.R
 import pt.isec.amov.tp.enums.MainTab
+import pt.isec.amov.tp.model.Alert
 import pt.isec.amov.tp.model.User
 import pt.isec.amov.tp.ui.components.AddProtectedDialog
 import pt.isec.amov.tp.ui.components.EmptyState
@@ -73,6 +74,16 @@ fun DashboardMonitorScreen(
 
     // --- State Variables ---
     var showAddDialog by remember { mutableStateOf(false) }
+    var selectedAlert by remember { mutableStateOf<Alert?>(null) }
+
+    if (selectedAlert != null) {
+        AlertDetailScreen(
+            alert = selectedAlert!!,
+            onBack = { selectedAlert = null },
+            viewModel = dashboardViewModel
+        )
+        return
+    }
 
     // --- Main Scaffold ---
     Scaffold(
@@ -103,11 +114,17 @@ fun DashboardMonitorScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    StatisticsSection(protecteds.size, 0) //TODO: substituir 0 por alertas ativos reais
+
+                    StatisticsSection(
+                        protectedCount = protecteds.size,
+                        activeAlerts = dashboardViewModel.activeAlerts.size
+                    )
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    AlertsSection(emptyList()) // TODO: substituir por alertas reais
+                    AlertsSection(
+                        alerts = dashboardViewModel.activeAlerts.values.toList(),
+                        onAlertClick = { selectedAlert = it })
                 }
 
                 Spacer(modifier = Modifier.width(24.dp))
@@ -139,6 +156,10 @@ fun DashboardMonitorScreen(
 
                 // Stats
                 StatisticsSection(protecteds.size, 0)
+                StatisticsSection(
+                    protectedCount = protecteds.size,
+                    activeAlerts = dashboardViewModel.activeAlerts.size
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -146,7 +167,10 @@ fun DashboardMonitorScreen(
                 LazyColumn(modifier = Modifier.weight(1f)) {
                     // Alerts Section
                     item {
-                        AlertsSection(emptyList())
+                        AlertsSection(
+                            alerts = dashboardViewModel.activeAlerts.values.toList(),
+                            onAlertClick = { selectedAlert = it }
+                        )
                         Spacer(modifier = Modifier.height(24.dp))
                     }
 
@@ -162,6 +186,7 @@ fun DashboardMonitorScreen(
                         }
                     } else {
                         items(protecteds) { protectedUser ->
+                            val userAlert = dashboardViewModel.activeAlerts[protectedUser.uid]
                             UserCard(
                                 user = protectedUser,
                                 isProtectedUser = true,
@@ -208,6 +233,15 @@ fun DashboardMonitorScreen(
             }
         )
     }
+}
+
+@Composable
+fun ProtectedsList(
+    protecteds: List<User>,
+    viewModel: DashboardViewModel,
+    onNavigate: (MainTab, String?) -> Unit
+) {
+    TODO("Not yet implemented")
 }
 
 // --- SUB-COMPONENTES UI ---
@@ -258,30 +292,40 @@ fun StatisticsSection(protectedCount: Int, activeAlerts: Int) {
 }
 
 @Composable
-fun AlertsSection(alerts: List<Any>) {
+fun AlertsSection(
+    alerts: List<Alert>, // CAMBIADO: De List<Any> a List<Alert>
+    onAlertClick: (Alert) -> Unit // CAMBIADO: Se añade el callback
+) {
     SectionTitle(stringResource(R.string.sect_alerts))
-
     Spacer(modifier = Modifier.height(8.dp))
 
     if (alerts.isEmpty()) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9).copy(alpha = 0.5f)),
-            border = BorderStroke(1.dp, Color(0xFF4CAF50))
-        ) {
-            Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+        Card(modifier = Modifier.fillMaxWidth(), colors = CardDefaults.cardColors(containerColor = Color(0xFFE8F5E9).copy(alpha = 0.5f))) {
+            Row(modifier = Modifier.padding(16.dp)) {
                 Icon(Icons.Default.Check, null, tint = Color(0xFF2E7D32))
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(stringResource(R.string.msg_no_active_alerts), color = Color(0xFF1B5E20))
+                Text(stringResource(R.string.msg_no_active_alerts))
             }
         }
     } else {
-        // TODO: Listar alertas aqui
+        alerts.forEach { alert ->
+            Card(
+                modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer),
+                onClick = { onAlertClick(alert) } // Ahora sí detecta onAlertClick
+            ) {
+                Row(modifier = Modifier.padding(16.dp)) {
+                    Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.error)
+                    Spacer(modifier = Modifier.width(12.dp))
+                    Text("EMERGENCIA: ${alert.type}", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                }
+            }
+        }
     }
 }
 
 @Composable
-fun ProtectedsList(protecteds: List<User>, viewModel: DashboardViewModel, onNavigate: (MainTab, String?) -> Unit) {
+fun ProtectedsList(protecteds: List<User>, viewModel: DashboardViewModel,onAlertSelected: (Alert) -> Unit, onNavigate: (MainTab, String?) -> Unit) {
     val context = LocalContext.current
 
     LazyColumn {
