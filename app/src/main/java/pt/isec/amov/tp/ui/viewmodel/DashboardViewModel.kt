@@ -1,25 +1,34 @@
 package pt.isec.amov.tp.ui.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import pt.isec.amov.tp.R
 import pt.isec.amov.tp.enums.UserRole
+import pt.isec.amov.tp.model.Alert
 import pt.isec.amov.tp.model.User
 import pt.isec.amov.tp.utils.AuthErrorType
 import pt.isec.amov.tp.utils.AuthException
 import pt.isec.amov.tp.utils.AuthRepository
 import pt.isec.amov.tp.utils.UserRepository
 
+
 class DashboardViewModel : ViewModel() {
     private val userRepo = UserRepository()
     private val authRepo = AuthRepository()
     private val _currentRole = MutableStateFlow(UserRole.PROTECTED)
     val currentRole = _currentRole.asStateFlow()
+    private val db = FirebaseFirestore.getInstance()
+    private val auth = com.google.firebase.auth.FirebaseAuth.getInstance()
+    var activeAlerts by mutableStateOf<Map<String, Alert>>(emptyMap())
+        private set
+    private var alertsListener: ListenerRegistration? = null
 
     fun initRole(user: User) {
         if (user.isMonitor && !user.isProtected) {
@@ -68,7 +77,40 @@ class DashboardViewModel : ViewModel() {
 
             // 2. Atualizar lista de Protegidos
             setupProtectedsRealtimeListeners(updatedUser.protecteds)
+
+            startListeningToAlerts(updatedUser.protecteds)
         }
+    }
+    var alertHistory by mutableStateOf<List<Alert>>(emptyList())
+        private set
+
+    fun loadAlertHistory() {
+        val userId = auth.currentUser?.uid ?: return
+        db.collection("alerts")
+            .whereEqualTo("protectedId", userId)
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    alertHistory = snapshot.toObjects(Alert::class.java)
+                }
+            }
+    }
+    private fun startListeningToAlerts(protectedIds: List<String>) {
+        alertsListener?.remove()
+        if (protectedIds.isEmpty()) {
+            activeAlerts = emptyMap()
+            return
+        }
+        alertsListener = db.collection("alerts")
+            .whereIn("protectedId", protectedIds)
+            .whereEqualTo("resolved", false)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null || snapshot == null) return@addSnapshotListener
+
+                // Mapeamos el ID del protegido a su alerta activa
+                activeAlerts = snapshot.toObjects(Alert::class.java)
+                    .associateBy { it.protectedId }
+            }
     }
 
     // --- Setup Realtime Listeners for Protecteds ---
@@ -94,6 +136,31 @@ class DashboardViewModel : ViewModel() {
             individualProtectedListeners.add(registration)
         }
     }
+    var authorizedDays by mutableStateOf<Set<Int>>(setOf(1,2,3,4,5,6,7)) // Por defecto todos
+    var startHour by mutableStateOf(0)
+    var endHour by mutableStateOf(23)
+
+    fun loadPrivacySettings() {
+        val userId = auth.currentUser?.uid ?: return
+        db.collection("userSettings").document(userId).addSnapshotListener { snapshot, _ ->
+            if (snapshot != null && snapshot.exists()) {
+                val daysList = snapshot.get("authorizedDays") as? List<Long>
+                authorizedDays = daysList?.map { it.toInt() }?.toSet() ?: setOf(1,2,3,4,5,6,7)
+                startHour = (snapshot.getLong("startHour") ?: 0).toInt()
+                endHour = (snapshot.getLong("endHour") ?: 23).toInt()
+            }
+        }
+    }
+
+    fun savePrivacySettings(days: Set<Int>, start: Int, end: Int) {
+        val userId = auth.currentUser?.uid ?: return
+        val settings = mapOf(
+            "authorizedDays" to days.toList(),
+            "startHour" to start,
+            "endHour" to end
+        )
+        db.collection("userSettings").document(userId).set(settings)
+    }
 
     // --- Stop Listening for Associations ---
     fun stopListening() {
@@ -101,8 +168,36 @@ class DashboardViewModel : ViewModel() {
         myUserListener = null
         individualProtectedListeners.forEach { it.remove() }
         individualProtectedListeners.clear()
+        alertsListener?.remove()
+        alertsListener = null
         myProtecteds = emptyList()
         myMonitors = emptyList()
+        activeAlerts = emptyMap()
+    }
+    fun resolveAlert(protectedId: String) {
+        // Buscamos la alerta activa de este protegido
+        val alertId = activeAlerts[protectedId]?.id ?: return
+
+        db.collection("alerts").document(alertId)
+            .update("resolved", true)
+            .addOnSuccessListener {
+                Log.d("DashboardViewModel", "Alerta marcada como resuelta")
+            }
+            .addOnFailureListener { e ->
+                Log.e("DashboardViewModel", "Error al resolver alerta: ${e.message}")
+            }
+    }
+    fun updateTimeWindow(days: Set<Int>, startH: Int, endH: Int) {
+        val userId = auth.currentUser?.uid ?: return
+        db.collection("users").document(userId).update(
+            mapOf(
+                "authorizedDays" to days.toList(), // Lista de días (1=Lunes, 7=Domingo)
+                "startHour" to startH,
+                "endHour" to endH
+            )
+        ).addOnSuccessListener {
+            // Opcional: Toast de éxito
+        }
     }
 
     // --- Generate Association Code ---

@@ -3,6 +3,7 @@ package pt.isec.amov.tp.enums
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.ManageAccounts
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Sos
@@ -17,4 +18,5 @@ enum class MainTab(val icon: ImageVector, val labelRes: Int) {
     SOS(Icons.Default.Sos, R.string.nav_sos),
     MAP(Icons.Default.Map, R.string.nav_map),
     PROFILE(Icons.Default.ManageAccounts, R.string.nav_profile),
+    PRIVACY(Icons.Default.Lock, R.string.lbl_time_window),
 }

@@ -1,5 +1,6 @@
 package pt.isec.amov.tp.ui.screens
 
+import android.content.Intent
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -81,7 +82,13 @@ fun MainScreen(
             if (currentRole == UserRole.MONITOR) {
                 listOf(MainTab.HOME, MainTab.CONNECTIONS, MainTab.MAP, MainTab.PROFILE)
             } else {
-                listOf(MainTab.HOME, MainTab.CONNECTIONS, MainTab.HISTORY, MainTab.PROFILE)
+                listOf(
+                    MainTab.HOME,
+                    MainTab.CONNECTIONS,
+                    MainTab.HISTORY,
+                    MainTab.PROFILE,
+                    MainTab.PRIVACY
+                )
             }
         }
     }
@@ -115,7 +122,11 @@ fun MainScreen(
             if (currentRole == UserRole.PROTECTED) {
                 FloatingActionButton(
                     onClick = {
-                        //TODO
+                        // Acción para lanzar el protocolo de emergencia (Punto 52 del enunciado)
+                        val intent = Intent(context, AlertActivity::class.java).apply {
+                            putExtra("RULE_TYPE", "PANIC_BUTTON")
+                        }
+                        context.startActivity(intent)
                     },
                     containerColor = Color.Red,
                     contentColor = Color.White,
@@ -135,25 +146,29 @@ fun MainScreen(
         },
         bottomBar = {
             NavigationBar {
-                visibleTabs.forEach { tab ->
+                // Filtramos PRIVACY para que el usuario no vea un icono de candado extra abajo
+                visibleTabs.filter { it != MainTab.PRIVACY }.forEach { tab ->
                     val isSelected = currentTab == tab
                     val isSOS = tab == MainTab.SOS
+
                     NavigationBarItem(
                         selected = isSelected,
                         onClick = {
                             if (isSOS) {
-                                // TODO: SOS action
+                                // Acción SOS
+                                val intent = Intent(context, AlertActivity::class.java).apply {
+                                    putExtra("RULE_TYPE", "PANIC_BUTTON")
+                                }
+                                context.startActivity(intent)
                             } else {
+                                // Navegación normal
                                 val index = visibleTabs.indexOf(tab)
                                 scope.launch { pagerState.animateScrollToPage(index) }
                                 if (tab != MainTab.CONNECTIONS) selectedUserId = null
                             }
                         },
                         icon = { Icon(tab.icon, contentDescription = null) },
-                        label = if (isLandscape) {
-                            { Text(stringResource(tab.labelRes)) }
-                        } else null,
-                        alwaysShowLabel = isLandscape
+                        label = { Text(stringResource(tab.labelRes)) }
                     )
                 }
             }
@@ -188,6 +203,7 @@ fun MainScreen(
                         )
                     }
                 }
+
                 MainTab.CONNECTIONS -> {
                     ConnectionsScreen(
                         authViewModel = authViewModel,
@@ -196,20 +212,27 @@ fun MainScreen(
                         initialUserId = selectedUserId,
                     )
                 }
+
                 MainTab.MAP -> {
                     MapScreen(dashboardViewModel)
                 }
+
                 MainTab.HISTORY -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("History (TODO)")
-                    }
+                    AlertHistoryScreen(dashboardViewModel)
                 }
+
                 MainTab.PROFILE -> {
                     ProfileScreen(authViewModel, onLogout)
                 }
+
                 MainTab.SOS -> {
                     // FAB action only, no tab content
                     Box(modifier = Modifier.fillMaxSize())
+                }
+
+                MainTab.PRIVACY -> {
+                    TimeWindowScreen(viewModel = dashboardViewModel)
+
                 }
             }
         }

@@ -35,6 +35,12 @@
             android:name=".services.MonitoringService"
             android:foregroundServiceType="location"
             android:exported="false" />
+        <activity
+            android:name=".ui.screens.AlertActivity"
+            android:exported="false"
+            android:launchMode="singleInstance"
+            android:showOnLockScreen="true"
+            android:theme="@style/Theme.TP" />
 
         <activity
             android:name=".MainActivity"

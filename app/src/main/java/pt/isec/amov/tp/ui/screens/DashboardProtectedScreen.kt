@@ -19,11 +19,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -36,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -85,9 +89,17 @@ fun DashboardProtectedScreen(
             }
 
             isServiceRunning = true
-            Toast.makeText(context, context.getString(R.string.msg_monitor_started), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.msg_monitor_started),
+                Toast.LENGTH_SHORT
+            ).show()
         } else {
-            Toast.makeText(context, context.getString(R.string.msg_perm_location_required), Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.msg_perm_location_required),
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -102,6 +114,7 @@ fun DashboardProtectedScreen(
     Scaffold { padding ->
 
         Column(
+
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
@@ -115,7 +128,7 @@ fun DashboardProtectedScreen(
             // --- Localization Monitoring Card ---
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = if(isServiceRunning) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
+                    containerColor = if (isServiceRunning) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -126,12 +139,16 @@ fun DashboardProtectedScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = if(isServiceRunning) stringResource(R.string.lbl_monitoring_active) else stringResource(R.string.lbl_monitoring_paused),
+                            text = if (isServiceRunning) stringResource(R.string.lbl_monitoring_active) else stringResource(
+                                R.string.lbl_monitoring_paused
+                            ),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = if(isServiceRunning) stringResource(R.string.msg_sharing_location) else stringResource(R.string.msg_not_sharing_location),
+                            text = if (isServiceRunning) stringResource(R.string.msg_sharing_location) else stringResource(
+                                R.string.msg_not_sharing_location
+                            ),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -152,14 +169,29 @@ fun DashboardProtectedScreen(
                                 val intent = Intent(context, MonitoringService::class.java)
                                 context.stopService(intent)
                                 isServiceRunning = false
-                                Toast.makeText(context, context.getString(R.string.msg_monitor_stopped), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.msg_monitor_stopped),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         },
                         modifier = Modifier.scale(1.2f)
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
 
+            // 1. EL BOTÓN DEBE SER INDEPENDIENTE
+            OutlinedButton(
+                onClick = { onNavigate(MainTab.PRIVACY, null) },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Solo esto va dentro del botón
+                Text(text = stringResource(R.string.lbl_time_window))
+            }
+
+            // 2. EL RESTO VA FUERA DEL BOTÓN (En la Column principal)
             Spacer(modifier = Modifier.height(32.dp))
 
             // --- Monitor List ---
@@ -169,12 +201,10 @@ fun DashboardProtectedScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 SectionTitle(stringResource(R.string.title_my_monitors))
-
-                // --- Add Monitor Button ---
                 IconButton(onClick = { showLinkDialog = true }) {
                     Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.title_add_monitor),
+                        Icons.Default.Add,
+                        stringResource(R.string.title_add_monitor),
                         tint = MaterialTheme.colorScheme.primary
                     )
                 }
@@ -182,8 +212,12 @@ fun DashboardProtectedScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // La lógica de la lista también fuera
             if (monitors.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
+                Box(
+                    modifier = Modifier.fillMaxSize().weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
                     EmptyState(stringResource(R.string.msg_no_monitors))
                 }
             } else {
@@ -204,26 +238,28 @@ fun DashboardProtectedScreen(
                                     }
                                 )
                             },
-                            onClick = {
-                                onNavigate(MainTab.CONNECTIONS, monitor.uid)
-                            }
+                            onClick = { onNavigate(MainTab.CONNECTIONS, monitor.uid) }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
                 }
             }
         }
-    }
 
-    if (showLinkDialog) {
-        AddMonitorDialog (
-            viewModel = dashboardViewModel,
-            onDismiss = { showLinkDialog = false },
-            onSuccess = {
-                Toast.makeText(context, context.getString(R.string.assoc_success), Toast.LENGTH_SHORT).show()
-                showLinkDialog = false
-            }
-        )
+        if (showLinkDialog) {
+            AddMonitorDialog(
+                viewModel = dashboardViewModel,
+                onDismiss = { showLinkDialog = false },
+                onSuccess = {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.assoc_success),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    showLinkDialog = false
+                }
+            )
+        }
     }
 }
 
