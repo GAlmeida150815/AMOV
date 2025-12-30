@@ -5,7 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import pt.isec.amov.tp.R
+import pt.isec.amov.tp.enums.UserRole
 import pt.isec.amov.tp.model.User
 import pt.isec.amov.tp.utils.AuthErrorType
 import pt.isec.amov.tp.utils.AuthException
@@ -15,6 +18,20 @@ import pt.isec.amov.tp.utils.UserRepository
 class DashboardViewModel : ViewModel() {
     private val userRepo = UserRepository()
     private val authRepo = AuthRepository()
+    private val _currentRole = MutableStateFlow(UserRole.PROTECTED)
+    val currentRole = _currentRole.asStateFlow()
+
+    fun initRole(user: User) {
+        if (user.isMonitor && !user.isProtected) {
+            _currentRole.value = UserRole.MONITOR
+        } else {
+            _currentRole.value = UserRole.PROTECTED
+        }
+    }
+
+    fun setRole(role: UserRole) {
+        _currentRole.value = role
+    }
 
     // --- UI State ---
     var isLoading by mutableStateOf(false)
