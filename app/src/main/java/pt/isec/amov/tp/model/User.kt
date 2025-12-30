@@ -29,5 +29,7 @@ data class User(
 
     // Localização
     val location: GeoPoint? = null,
-    val lastUpdate: Timestamp? = null
+    val lastUpdate: Timestamp? = null,
+
+    val batteryLevel: Int? = null
 )

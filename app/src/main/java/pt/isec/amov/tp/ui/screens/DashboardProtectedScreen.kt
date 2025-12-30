@@ -15,27 +15,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -45,14 +36,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import pt.isec.amov.tp.R
-import pt.isec.amov.tp.services.LocationService
+import pt.isec.amov.tp.enums.MainTab
+import pt.isec.amov.tp.services.MonitoringService
+import pt.isec.amov.tp.ui.components.AddMonitorDialog
 import pt.isec.amov.tp.ui.components.EmptyState
 import pt.isec.amov.tp.ui.components.SectionTitle
 import pt.isec.amov.tp.ui.components.UserCard
@@ -64,7 +55,8 @@ import pt.isec.amov.tp.ui.viewmodel.DashboardViewModel
 fun DashboardProtectedScreen(
     authViewModel: AuthViewModel,
     dashboardViewModel: DashboardViewModel,
-    //onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onNavigate: (MainTab, String?) -> Unit
 ) {
     // --- ViewModel State ---
     val user = authViewModel.user
@@ -85,7 +77,7 @@ fun DashboardProtectedScreen(
         val coarse = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
 
         if (fine || coarse) {
-            val intent = Intent(context, LocationService::class.java)
+            val intent = Intent(context, MonitoringService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(intent)
             } else {
@@ -107,22 +99,7 @@ fun DashboardProtectedScreen(
     // --- Landscape Orientation ---
     //val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    Scaffold(
-        floatingActionButton = {
-            // --- SOS ---
-            FloatingActionButton(
-                onClick = { /* TODO: Disparar Alerta SOS */ },
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = Color.White,
-                modifier = Modifier.size(80.dp)
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Default.NotificationsActive, null)
-                    Text("SOS", fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-    ) { padding ->
+    Scaffold { padding ->
 
         Column(
             modifier = Modifier
@@ -172,7 +149,7 @@ fun DashboardProtectedScreen(
                                 )
                             } else {
                                 // --- Stop Service ---
-                                val intent = Intent(context, LocationService::class.java)
+                                val intent = Intent(context, MonitoringService::class.java)
                                 context.stopService(intent)
                                 isServiceRunning = false
                                 Toast.makeText(context, context.getString(R.string.msg_monitor_stopped), Toast.LENGTH_SHORT).show()
@@ -226,6 +203,9 @@ fun DashboardProtectedScreen(
                                         Toast.makeText(context, "Error: $error", Toast.LENGTH_LONG).show()
                                     }
                                 )
+                            },
+                            onClick = {
+                                onNavigate(MainTab.CONNECTIONS, monitor.uid)
                             }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
@@ -236,7 +216,7 @@ fun DashboardProtectedScreen(
     }
 
     if (showLinkDialog) {
-        LinkMonitorDialog(
+        AddMonitorDialog (
             viewModel = dashboardViewModel,
             onDismiss = { showLinkDialog = false },
             onSuccess = {
@@ -247,64 +227,3 @@ fun DashboardProtectedScreen(
     }
 }
 
-// --- Link Monitor Dialog ---
-@Composable
-fun LinkMonitorDialog(
-    viewModel: DashboardViewModel,
-    onDismiss: () -> Unit,
-    onSuccess: () -> Unit
-) {
-    var code by remember { mutableStateOf("") }
-    val isLoading = viewModel.isLoading
-    val errorRes = viewModel.associationError
-
-    AlertDialog(
-        onDismissRequest = {
-            viewModel.clearAssociationState()
-            onDismiss()
-        },
-        title = { Text(stringResource(R.string.title_add_monitor)) },
-        text = {
-            Column {
-                Text(stringResource(R.string.hint_enter_code))
-                Spacer(modifier = Modifier.height(8.dp))
-
-                OutlinedTextField(
-                    value = code,
-                    onValueChange = { if (it.length <= 6) code = it },
-                    label = { Text("Code") },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = errorRes != null,
-                    supportingText = {
-                        if (errorRes != null) {
-                            Text(stringResource(errorRes), color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                if (isLoading) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-                }
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { viewModel.associateMonitor(code, onSuccess) },
-                enabled = !isLoading && code.length == 6
-            ) {
-                Text(stringResource(R.string.btn_associate))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = {
-                viewModel.clearAssociationState()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.btn_cancel))
-            }
-        }
-    )
-}
