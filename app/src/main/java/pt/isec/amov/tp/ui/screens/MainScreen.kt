@@ -1,204 +1,215 @@
 package pt.isec.amov.tp.ui.screens
 
 import android.content.res.Configuration
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Sos
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import pt.isec.amov.tp.R
 import pt.isec.amov.tp.enums.MainTab
+import pt.isec.amov.tp.enums.UserRole
+import pt.isec.amov.tp.ui.components.RoleSwitchTopBar
 import pt.isec.amov.tp.ui.viewmodel.AuthViewModel
 import pt.isec.amov.tp.ui.viewmodel.DashboardViewModel
+import pt.isec.amov.tp.ui.viewmodel.RulesViewModel
 
 @Composable
 fun MainScreen(
     authViewModel: AuthViewModel,
     dashboardViewModel: DashboardViewModel,
+    rulesViewModel: RulesViewModel,
     onLogout: () -> Unit
 ) {
+    // --- User State ---
     val user = authViewModel.user
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
-    // --- State Variables ---
-    var currentTab by remember { mutableStateOf(MainTab.HOME) }
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-    val visibleTabs = remember(user?.isMonitor) {
-        if (user?.isMonitor == true) {
-            MainTab.entries
-        } else {
-            MainTab.entries.filter { it != MainTab.MAP }
-        }
-    }
 
     if (user == null) {
-        CircularProgressIndicator()
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
         return
     }
-
-    // --- Start Listening for Associations ---
+    // --- User Role State ---
     LaunchedEffect(Unit) {
-        dashboardViewModel.startListening()
+        dashboardViewModel.initRole(user)
     }
+    val currentRole by dashboardViewModel.currentRole.collectAsState()
+    val isDualRole = user.isMonitor && user.isProtected
 
-    // --- Stop Listening on Dispose ---
-    DisposableEffect(Unit) {
-        onDispose {
-            dashboardViewModel.stopListening()
+    var selectedUserId by remember { mutableStateOf<String?>(null) }
+
+    // --- Current Tab State ---
+    val visibleTabs by remember(currentRole) {
+        derivedStateOf {
+            if (currentRole == UserRole.MONITOR) {
+                listOf(MainTab.HOME, MainTab.CONNECTIONS, MainTab.MAP, MainTab.PROFILE)
+            } else {
+                listOf(MainTab.HOME, MainTab.CONNECTIONS, MainTab.HISTORY, MainTab.PROFILE)
+            }
+        }
+    }
+    val pagerState = rememberPagerState(pageCount = { visibleTabs.size })
+    val currentTab = visibleTabs.getOrElse(pagerState.currentPage) { MainTab.HOME }
+    val isSwipeEnabled = currentTab != MainTab.MAP
+
+    val onNavigate: (MainTab, String?) -> Unit = { tab, userId ->
+        selectedUserId = userId
+        val index = visibleTabs.indexOf(tab)
+        if (index != -1) {
+            scope.launch { pagerState.animateScrollToPage(index) }
         }
     }
 
+    // --- Associations Listeners ---
+    LaunchedEffect(Unit) { dashboardViewModel.startListening() }
+    DisposableEffect(Unit) { onDispose { dashboardViewModel.stopListening() } }
+
     Scaffold(
+        topBar = {
+            if (isDualRole) {
+                RoleSwitchTopBar(
+                    currentRole = currentRole,
+                    onRoleChange = { newRole -> dashboardViewModel.setRole(newRole) }
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.Center,
+        floatingActionButton = {
+            if (currentRole == UserRole.PROTECTED) {
+                FloatingActionButton(
+                    onClick = {
+                        //TODO
+                    },
+                    containerColor = Color.Red,
+                    contentColor = Color.White,
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .offset(y = 50.dp),
+                    elevation = FloatingActionButtonDefaults.elevation(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Sos,
+                        contentDescription = "SOS",
+                        modifier = Modifier.size(36.dp)
+                    )
+                }
+            }
+        },
         bottomBar = {
             NavigationBar {
                 visibleTabs.forEach { tab ->
+                    val isSelected = currentTab == tab
+                    val isSOS = tab == MainTab.SOS
                     NavigationBarItem(
+                        selected = isSelected,
+                        onClick = {
+                            if (isSOS) {
+                                // TODO: SOS action
+                            } else {
+                                val index = visibleTabs.indexOf(tab)
+                                scope.launch { pagerState.animateScrollToPage(index) }
+                                if (tab != MainTab.CONNECTIONS) selectedUserId = null
+                            }
+                        },
                         icon = { Icon(tab.icon, contentDescription = null) },
                         label = if (isLandscape) {
                             { Text(stringResource(tab.labelRes)) }
                         } else null,
-                        alwaysShowLabel = isLandscape,
-                        selected = currentTab == tab,
-                        onClick = { currentTab = tab }
+                        alwaysShowLabel = isLandscape
                     )
                 }
             }
         }
     ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            when (currentTab) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            userScrollEnabled = isSwipeEnabled
+        ) { pageIndex ->
+            if (pageIndex >= visibleTabs.size) return@HorizontalPager
+
+            val tab = visibleTabs[pageIndex]
+
+            when (tab) {
                 MainTab.HOME -> {
-                    when {
-                        user.isMonitor && user.isProtected -> {
-                            TabbedDashboard(authViewModel, dashboardViewModel, onLogout)
-                        }
-                        user.isMonitor -> {
-                            DashboardMonitorScreen(authViewModel, dashboardViewModel, onLogout)
-                        }
-                        user.isProtected -> {
-                            DashboardProtectedScreen(authViewModel, dashboardViewModel, onLogout)
-                        }
+                    if (currentRole == UserRole.MONITOR) {
+                        DashboardMonitorScreen(
+                            authViewModel = authViewModel,
+                            dashboardViewModel = dashboardViewModel,
+                            onLogout = onLogout,
+                            onNavigate = onNavigate,
+                        )
+                    } else {
+                        DashboardProtectedScreen(
+                            authViewModel = authViewModel,
+                            dashboardViewModel = dashboardViewModel,
+                            onLogout = onLogout,
+                            onNavigate = onNavigate,
+                        )
                     }
+                }
+                MainTab.CONNECTIONS -> {
+                    ConnectionsScreen(
+                        authViewModel = authViewModel,
+                        dashboardViewModel = dashboardViewModel,
+                        rulesViewModel = rulesViewModel,
+                        initialUserId = selectedUserId,
+                    )
                 }
                 MainTab.MAP -> {
-                    if (user.isMonitor) {
-                        MapScreen(dashboardViewModel)
-                    }
+                    MapScreen(dashboardViewModel)
                 }
                 MainTab.HISTORY -> {
-                    // TODO: HISTORICO
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = androidx.compose.ui.Alignment.Center) {
-                        Text("Histórico de Alertas (Em Construção)")
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Text("History (TODO)")
                     }
                 }
                 MainTab.PROFILE -> {
                     ProfileScreen(authViewModel, onLogout)
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TabbedDashboard(
-    authViewModel: AuthViewModel,
-    dashboardViewModel: DashboardViewModel,
-    onLogout: () -> Unit
-) {
-    val pagerState = rememberPagerState(pageCount = { 2 })
-    val scope = rememberCoroutineScope()
-
-    val titles = listOf(
-        stringResource(R.string.tab_monitor),
-        stringResource(R.string.tab_protected)
-    )
-
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            Column(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surface)
-                    .statusBarsPadding()
-            ) {
-                TabRow(
-                    selectedTabIndex = pagerState.currentPage,
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentColor = MaterialTheme.colorScheme.primary,
-                    indicator = { tabPositions ->
-                        if (pagerState.currentPage < tabPositions.size) {
-                            Box(
-                                modifier = Modifier
-                                    .tabIndicatorOffset(tabPositions[pagerState.currentPage])
-                                    .height(4.dp)
-                                    .padding(horizontal = 20.dp)
-                                    .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
-                                    .background(MaterialTheme.colorScheme.primary)
-                            )
-                        }
-                    },
-                    divider = { /* no grey line */ }
-                ) {
-                    titles.forEachIndexed { index, title ->
-                        val selected = pagerState.currentPage == index
-                        Tab(
-                            selected = selected,
-                            onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
-                            text = {
-                                Text(
-                                    text = title,
-                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal,
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                            },
-                            selectedContentColor = MaterialTheme.colorScheme.primary,
-                            unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-        }
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { page ->
-                when (page) {
-                    0 -> DashboardMonitorScreen(authViewModel, dashboardViewModel, onLogout)
-                    1 -> DashboardProtectedScreen(authViewModel, dashboardViewModel, onLogout)
+                MainTab.SOS -> {
+                    // FAB action only, no tab content
+                    Box(modifier = Modifier.fillMaxSize())
                 }
             }
         }

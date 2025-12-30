@@ -10,6 +10,7 @@ import pt.isec.amov.tp.ui.screens.MainScreen
 import pt.isec.amov.tp.ui.screens.RegisterScreen
 import pt.isec.amov.tp.ui.viewmodel.AuthViewModel
 import pt.isec.amov.tp.ui.viewmodel.DashboardViewModel
+import pt.isec.amov.tp.ui.viewmodel.RulesViewModel
 
 // --- Routes ---
 sealed class Screen(val route: String) {
@@ -23,6 +24,7 @@ fun SetupNavGraph(navController: NavHostController) {
     // --- ViewModels ---
     val authViewModel: AuthViewModel = viewModel()
     val dashboardViewModel: DashboardViewModel = viewModel()
+    val rulesViewModel: RulesViewModel = viewModel ()
 
     NavHost(
         navController = navController,
@@ -54,6 +56,7 @@ fun SetupNavGraph(navController: NavHostController) {
             MainScreen(
                 authViewModel = authViewModel,
                 dashboardViewModel = dashboardViewModel,
+                rulesViewModel = rulesViewModel,
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(Screen.Login.route) {
@@ -62,5 +65,6 @@ fun SetupNavGraph(navController: NavHostController) {
                 }
             )
         }
+
     }
 }
