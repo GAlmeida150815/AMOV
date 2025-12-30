@@ -5,15 +5,42 @@
     <string name="btn_add_protected">Adicionar Protegido</string>
     <string name="btn_associate">Associar</string>
     <string name="btn_cancel">Cancelar</string>
+    <string name="btn_cancel_alert">CANCELAR ALERTA</string>
     <string name="btn_change_password">Alterar Palavra-passe</string>
     <string name="btn_close">Fechar</string>
     <string name="btn_confirm_remove">Remover</string>
+    <string name="btn_create_rule">Criar Regra</string>
     <string name="btn_edit_profile">Editar Perfil</string>
     <string name="btn_logout">Sair</string>
     <string name="btn_remove">Remover</string>
     <string name="btn_save">Guardar Alterações</string>
     <string name="btn_send_email">Enviar Email</string>
+    <string name="btn_update_rule">Atualizar Regra</string>
 
+    <string name="day_fri">Sex</string>
+    <string name="day_mon">Seg</string>
+    <string name="day_sat">Sáb</string>
+    <string name="day_sun">Dom</string>
+    <string name="day_thu">Qui</string>
+    <string name="day_tue">Ter</string>
+    <string name="day_wed">Qua</string>
+
+    <string-array name="days_short">
+        <item>S</item>
+        <item>T</item>
+        <item>Q</item>
+        <item>Q</item>
+        <item>S</item>
+        <item>S</item>
+        <item>D</item>
+    </string-array>
+
+    <string name="desc_add_connection">Adicionar Ligação</string>
+    <string name="desc_add_rule">Adicionar Regra</string>
+    <string name="desc_back">Voltar</string>
+
+    <string name="dialog_delete_rule_msg">Tem a certeza que deseja eliminar a regra \"%1$s\"?</string>
+    <string name="dialog_delete_rule_title">Eliminar Regra</string>
     <string name="dialog_remove_monitor_msg">Deseja deixar de partilhar dados com %1$s?</string>
     <string name="dialog_remove_monitor_title">Remover Monitor</string>
     <string name="dialog_remove_msg">Tem a certeza que deseja deixar de monitorizar %1$s? Esta ação é irreversível.</string>
@@ -27,8 +54,10 @@
     <string name="err_auth_needed">Autenticação necessária.</string>
     <string name="err_cancel_code_invalid">O código deve ter 4–6 dígitos</string>
     <string name="err_code_expired">Código expirado. Peça um novo ao Monitor.</string>
+    <string name="err_creating_rule">Erro ao criar regra</string>
     <string name="err_field_empty">Este campo não pode estar vazio</string>
     <string name="err_gen_code">Erro ao gerar código.</string>
+    <string name="err_incorrect_code">Código Incorreto!</string>
     <string name="err_invalid_email">Formato de email inválido</string>
     <string name="err_login_generic">Falha no login.</string>
     <string name="err_no_profile">Erro: Perfil não definido.</string>
@@ -38,26 +67,53 @@
     <string name="err_register_generic">Erro no registo.</string>
     <string name="err_resend_failed">Error ao reenviar o email.</string>
     <string name="err_uid_null">Erro: ID de utilizador nulo.</string>
+    <string name="err_upload_video">Falha no upload do vídeo</string>
     <string name="err_user_data_fetch">Erro ao obter dados do utilizador.</string>
+    <string name="err_verify_code">Erro ao verificar código</string>
+
+    <string name="fmt_duration">Inatividade Máx: %1$s min</string>
+    <string name="fmt_radius">Raio: %1$s m</string>
+    <string name="fmt_speed">Máx: %1$s km/h</string>
 
     <string name="hint_enter_code">Insira o código de 6 dígitos</string>
 
+    <string name="lbl_24h_active">Ativo 24h</string>
+    <string name="lbl_attention">ATENÇÃO!</string>
+    <string name="lbl_authorized">Autorizado</string>
+    <string name="lbl_battery">Bateria</string>
     <string name="lbl_cancel_code">Código de Cancelamento</string>
     <string name="lbl_click_to_copy">(Clique para copiar)</string>
     <string name="lbl_confirm_new_password">Confirmar Nova Palavra-passe</string>
+    <string name="lbl_created_by">Criado por:</string>
     <string name="lbl_current_password">Palavra-passe Atual</string>
+    <string name="lbl_description">Descrição</string>
+    <string name="lbl_duration">Duração (minutos)</string>
     <string name="lbl_email">Email (Não editável)</string>
+    <string name="lbl_end_h">Fim (H)</string>
+    <string name="lbl_enter_cancel_code">Insira código para cancelar:</string>
+    <string name="lbl_everyday">Todos os dias</string>
     <string name="lbl_last_update">Ult. atualização: %1$s</string>
+    <string name="lbl_latitude">Latitude</string>
+    <string name="lbl_longitude">Longitude</string>
+    <string name="lbl_max_speed">Velocidade Máx (km/h)</string>
+    <string name="lbl_max_speed_kmh">Máx: %1$s km/h</string>
     <string name="lbl_monitoring_active">Monitorização Ativa</string>
     <string name="lbl_monitoring_paused">Monitorização Pausada</string>
     <string name="lbl_name">Nome</string>
     <string name="lbl_new_password">Nova Palavra-passe</string>
+    <string name="lbl_radius">Raio (metros)</string>
+    <string name="lbl_radius_m">Raio: %1$s m</string>
+    <string name="lbl_rule_name">Nome da Regra</string>
+    <string name="lbl_rule_type">Tipo de Regra</string>
+    <string name="lbl_select_protected">Selecione um Protegido</string>
+    <string name="lbl_start_h">Início (H)</string>
     <string name="lbl_stat_alerts">Alertas Enviados</string>
     <string name="lbl_stat_monitors">Monitores</string>
     <string name="lbl_stat_protecteds">Protegidos</string>
     <string name="lbl_stats">Estatísticas</string>
     <string name="lbl_status_danger">Estado: Alerta!</string>
     <string name="lbl_status_ok">Estado: Seguro</string>
+    <string name="lbl_time_window">Janela Temporal</string>
 
     <string name="login_button">Entrar</string>
     <string name="login_email_label">Correio Electrónico</string>
@@ -72,6 +128,9 @@
     <string name="mfa_resend_error">Erro ao enviar: %1$s</string>
     <string name="mfa_resend_success">Email de verificação reenviado!</string>
 
+    <string name="msg_alert_cancelled">Alerta Cancelado!</string>
+    <string name="msg_alert_detected">ALERTA DETETADO!</string>
+    <string name="msg_alert_sent_video">Alerta enviado com vídeo!</string>
     <string name="msg_assoc_removed_success">Associação removida com sucesso.</string>
     <string name="msg_code_copied">Código copiado para a área de transferência!</string>
     <string name="msg_enter_email_reset">Insira o seu email para receber um link de recuperação.</string>
@@ -80,20 +139,28 @@
     <string name="msg_monitor_started">Monitorização Iniciada</string>
     <string name="msg_monitor_stopped">Monitorização Parada</string>
     <string name="msg_no_active_alerts">Sem alertas ativos. Tudo tranquilo.</string>
-    <string name="msg_no_monitors">Sem monitores associados.</string>
-    <string name="msg_no_protecteds">Ainda sem protegidos associados.</string>
+    <string name="msg_no_monitors">Ainda não tem monitores associados.</string>
+    <string name="msg_no_protecteds">Ainda não tem protegidos associados.</string>
+    <string name="msg_no_rules_protected">Sem regras de segurança definidas.</string>
     <string name="msg_not_sharing_location">Ninguém consegue ver a sua localização.</string>
+    <string name="msg_only_protected_auth">Apenas o protegido pode autorizar a regra.</string>
     <string name="msg_password_updated">Palavra-passe alterada com sucesso!</string>
     <string name="msg_perm_location_required">Permissão de localização necessária</string>
+    <string name="msg_permissions_evidence">Permissões necessárias para gravar evidência</string>
     <string name="msg_profile_updated">Perfil atualizado com sucesso!</string>
+    <string name="msg_recording_evidence">A GRAVAR EVIDÊNCIA...</string>
+    <string name="msg_recording_video_30s">A gravar vídeo de 30s</string>
     <string name="msg_reg_success">Conta criada com sucesso!</string>
     <string name="msg_reset_email_sent">Email de recuperação enviado! Verifique a sua caixa de entrada.</string>
+    <string name="msg_rule_created_success">Regra criada com sucesso!</string>
     <string name="msg_select_marker">Selecione um pino para ver detalhes.</string>
+    <string name="msg_sending_sos">A ENVIAR SOS...</string>
     <string name="msg_share_code">Partilhe este código com o Protegido:</string>
     <string name="msg_sharing_location">A sua localização está a ser partilhada.</string>
     <string name="msg_welcome">Bem-vindo, %1$s</string>
     <string name="msg_welcome_protected">Olá, %1$s. Sente-se seguro hoje?</string>
 
+    <string name="nav_connections">Conexões</string>
     <string name="nav_history">Histórico</string>
     <string name="nav_home">Início</string>
     <string name="nav_map">Mapa</string>
@@ -116,6 +183,13 @@
     <string name="reg_select_role">Seleccione o(s) seu(s) Papel(is)</string>
     <string name="reg_title">Criar Conta</string>
 
+    <string name="rule_car_accident">Acidente Automóvel</string>
+    <string name="rule_fall_detection">Deteção de Queda</string>
+    <string name="rule_geofencing">Geofencing (Cerca Virtual)</string>
+    <string name="rule_inactivity">Inatividade</string>
+    <string name="rule_panic_button">Botão de Pânico</string>
+    <string name="rule_speed_limit">Limite de Velocidade</string>
+
     <string name="sect_alerts">Alertas Ativos</string>
     <string name="sect_protecteds">Os Meus Protegidos</string>
 
@@ -126,9 +200,14 @@
 
     <string name="title_add_monitor">Adicionar Monitor</string>
     <string name="title_add_protected">Adicionar Protegido</string>
+    <string name="title_add_rule">Nova Regra de Segurança</string>
     <string name="title_change_password">Alterar Palavra-passe</string>
     <string name="title_dashboard">Painel de Controlo</string>
+    <string name="title_details">Detalhes do Utilizador</string>
+    <string name="title_edit_rule">Editar Regra</string>
     <string name="title_map_all">Localização em Tempo Real</string>
     <string name="title_my_monitors">Os Meus Monitores</string>
+    <string name="title_my_protecteds">Meus Protegidos</string>
+    <string name="title_my_rules">Regras de Segurança</string>
     <string name="title_reset_password">Redefinir Palavra-passe</string>
 </resources>

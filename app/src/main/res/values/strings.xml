@@ -1,8 +1,4 @@
 <resources>
-<<<<<<< Updated upstream
-    <string name="app_name">SafetYSec</string>
-</resources>
-=======
     <string name="app_name" translatable="false">SafetYSec</string>
 
     <string name="assoc_success">Association successful!</string>
@@ -217,4 +213,3 @@
     <string name="title_my_rules">Safety Rules</string>
     <string name="title_reset_password">Reset Password</string>
 </resources>
->>>>>>> Stashed changes
