@@ -155,7 +155,6 @@ fun DashboardMonitorScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // Stats
-                StatisticsSection(protecteds.size, 0)
                 StatisticsSection(
                     protectedCount = protecteds.size,
                     activeAlerts = dashboardViewModel.activeAlerts.size
@@ -317,53 +316,11 @@ fun AlertsSection(
                 Row(modifier = Modifier.padding(16.dp)) {
                     Icon(Icons.Default.Warning, null, tint = MaterialTheme.colorScheme.error)
                     Spacer(modifier = Modifier.width(12.dp))
-                    Text("EMERGENCIA: ${alert.type}", fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    Text(stringResource(R.string.lbl_emergency_type, alert.type), fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
                 }
             }
         }
     }
 }
 
-@Composable
-fun ProtectedsList(protecteds: List<User>, viewModel: DashboardViewModel,onAlertSelected: (Alert) -> Unit, onNavigate: (MainTab, String?) -> Unit) {
-    val context = LocalContext.current
 
-    LazyColumn {
-        if (protecteds.isEmpty()) {
-            item {
-                EmptyState(stringResource(R.string.msg_no_protecteds))
-            }
-        } else {
-            items(protecteds) { user ->
-                UserCard(
-                    user = user,
-                    isProtectedUser = true,
-                    onRemove = {
-                        viewModel.removeAssociation(
-                            otherUserId = user.uid,
-                            amIMonitor = true,
-                            onSuccess = {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.msg_assoc_removed_success),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            },
-                            onFailure = { errorMsg ->
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.err_assoc_remove, errorMsg),
-                                    Toast.LENGTH_LONG
-                                ).show()
-                            }
-                        )
-                    },
-                    onClick = {
-                        onNavigate(MainTab.CONNECTIONS, user.uid)
-                    }
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-    }
-}

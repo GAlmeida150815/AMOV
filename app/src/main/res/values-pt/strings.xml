@@ -210,4 +210,24 @@
     <string name="title_my_protecteds">Meus Protegidos</string>
     <string name="title_my_rules">Regras de Segurança</string>
     <string name="title_reset_password">Redefinir Palavra-passe</string>
+    <string name="msg_save_success">Configurações guardadas com sucesso</string>
+    <string name="log_rules_updated">Regras atualizadas: %1$d ativas</string>
+    <string name="log_rule_broken">REGRA QUEBRADA: %1$s (Tipo: %2$s)</string>
+
+    <string name="desc_sos">Botão de Pânico SOS</string>
+    <string name="error_recording">Erro de gravação: %1$s</string>
+    <string name="err_camera_binding">Erro ao vincular CameraX</string>
+    <string name="error_upload">Erro de carregamento: %1$s</string>
+    <string name="alert_title">ALERTA DE SEGURANÇA!</string>
+    <string name="alert_cancel_label">Tempo para cancelar:</string>
+    <string name="alert_pin_label">Insira o PIN</string>
+    <string name="alert_sending_msg">A gravar e a enviar alerta…</string>
+
+    <string name="btn_back">Voltar</string>
+    <string name="btn_resolve_ok">TUDO BEM</string>
+    <string name="alert_detail_title">Detalhe de Emergência</string>
+    <string name="lbl_alert_type">TIPO: %1$s</string>
+    <string name="lbl_protected_id">ID Protegido: %1$s</string>
+    <string name="msg_video_not_found">Vídeo não disponível</string>
+    <string name="lbl_emergency_type">EMERGÊNCIA: %1$s</string>
 </resources>

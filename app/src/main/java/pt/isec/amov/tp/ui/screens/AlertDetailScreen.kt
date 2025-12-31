@@ -14,10 +14,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.unit.dp
 import pt.isec.amov.tp.model.Alert
 import pt.isec.amov.tp.ui.viewmodel.DashboardViewModel
+import pt.isec.amov.tp.R
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -56,10 +58,10 @@ fun AlertDetailScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.btn_back))
                 }
                 Text(
-                    text = "Detalle de Emergencia",
+                    text = stringResource(R.string.alert_detail_title),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(start = 8.dp)
                 )
@@ -81,8 +83,8 @@ fun AlertDetailScreen(
                 )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text("TIPO: ${alert.type}", style = MaterialTheme.typography.headlineSmall)
-                    Text("ID Protegido: ${alert.protectedId}", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.lbl_alert_type, alert.type), style = MaterialTheme.typography.headlineSmall)
+                    Text(stringResource(R.string.lbl_protected_id, alert.protectedId), style = MaterialTheme.typography.bodyMedium)
                 }
             }
 
@@ -105,7 +107,7 @@ fun AlertDetailScreen(
                         modifier = Modifier.fillMaxSize()
                     )
                 } else {
-                    Text("Video no disponible", modifier = Modifier.align(Alignment.Center))
+                    Text(text = stringResource(R.string.msg_video_not_found), modifier = Modifier.align(Alignment.Center))
                 }
             }
 
@@ -121,7 +123,7 @@ fun AlertDetailScreen(
                     containerColor = MaterialTheme.colorScheme.error
                 )
             ) {
-                Text("TODO OK")
+                Text(stringResource(R.string.btn_resolve_ok))
             }
         }
     }

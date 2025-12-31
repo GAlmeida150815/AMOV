@@ -119,7 +119,7 @@ class MonitoringService : Service() {
 
                 if (snapshot != null) {
                     activeRules = snapshot.toObjects(SafetyRule::class.java)
-                    Log.d("MonitoringService", "Regras atualizadas: ${activeRules.size} ativas")
+                    Log.d("MonitoringService", getString(R.string.log_rules_updated, activeRules.size))
                 }
             }
     }
@@ -192,7 +192,7 @@ class MonitoringService : Service() {
     }
 
     private fun triggerAlertProcess(rule: SafetyRule) {
-        Log.w("MonitoringService", "REGRA QUEBRADA: ${rule.name} (Tipo: ${rule.type})")
+        Log.w("MonitoringService", getString(R.string.log_rule_broken, rule.name, rule.type.name))
 
         val intent = Intent(this, AlertActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP

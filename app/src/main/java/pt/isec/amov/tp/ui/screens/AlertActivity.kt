@@ -18,6 +18,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -32,6 +33,7 @@ import pt.isec.amov.tp.ui.viewmodel.AuthViewModel
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import pt.isec.amov.tp.R
 
 class AlertActivity : ComponentActivity() {
 
@@ -98,7 +100,7 @@ class AlertActivity : ComponentActivity() {
                             if (!event.hasError()) {
                                 uploadVideoToFirebase(videoFile)
                             } else {
-                                Log.e("AlertActivity", "Error grabación: ${event.error}")
+                                Log.e("AlertActivity", getString(R.string.error_recording, event.error.toString()))
                             }
                         }
                     }
@@ -109,7 +111,7 @@ class AlertActivity : ComponentActivity() {
                 }, 30000)
 
             } catch (e: Exception) {
-                Log.e("AlertActivity", "Error vinculando CameraX", e)
+                Log.e("AlertActivity", this@AlertActivity.getString(R.string.err_camera_binding), e)
             }
         }, ContextCompat.getMainExecutor(this))
     }
@@ -140,7 +142,7 @@ class AlertActivity : ComponentActivity() {
                 }
             }
             .addOnFailureListener { e ->
-                Log.e("AlertActivity", "Error subida: ${e.message}")
+                Log.e("AlertActivity", this@AlertActivity.getString(R.string.error_upload, e.message.toString()))
             }
     }
 
@@ -185,9 +187,9 @@ fun AlertCountdownScreen(
             modifier = Modifier.padding(24.dp)
         ) {
             if (!recordingStarted) {
-                Text("¡ALERTA DE SEGURIDAD!", style = MaterialTheme.typography.headlineLarge, color = Color.Red)
+                Text(stringResource(R.string.alert_title), style = MaterialTheme.typography.headlineLarge, color = Color.Red)
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Tiempo para cancelar:", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.alert_cancel_label), style = MaterialTheme.typography.titleMedium)
                 Text("$timeLeft", fontSize = 100.sp, color = Color.Red, style = MaterialTheme.typography.headlineLarge)
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -198,13 +200,13 @@ fun AlertCountdownScreen(
                         inputPin = it
                         if (it == correctPin) onCorrectPin()
                     },
-                    label = { Text("Introduce PIN") },
+                    label = { Text(stringResource(R.string.alert_pin_label)) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true
                 )
             } else {
                 CircularProgressIndicator(color = Color.Red)
-                Text("Grabando y enviando alerta...", modifier = Modifier.padding(top = 16.dp))
+                Text(stringResource(R.string.alert_sending_msg), modifier = Modifier.padding(top = 16.dp))
             }
         }
     }
