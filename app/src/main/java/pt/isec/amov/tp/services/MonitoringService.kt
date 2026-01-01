@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -48,6 +49,8 @@ class MonitoringService : Service() {
 
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
+    // Añade esta línea arriba con las demás variables
+    private var lastLocation: Location? = null
 
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
@@ -85,10 +88,35 @@ class MonitoringService : Service() {
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             locationResult.lastLocation?.let { location ->
+                lastLocation = location
                 updateFirestoreLocation(location.latitude, location.longitude)
                 checkSecurityRules(location)
             }
         }
+    }
+    private fun sendAlertToFirestore(type: String, ruleId: String?) {
+        // 1. Verificamos que el usuario está logueado
+        val user = auth.currentUser ?: return
+
+        val alertData = hashMapOf(
+            "protectedId" to user.uid,
+            // CORRECCIÓN: Usamos displayName, no name
+            "protectedName" to (user.displayName ?: "Usuario"),
+            "timestamp" to com.google.firebase.Timestamp.now(),
+            "type" to type,
+            "ruleId" to ruleId,
+            // CORRECCIÓN: Usamos la variable lastLocation que definimos arriba
+            "location" to lastLocation?.let { GeoPoint(it.latitude, it.longitude) },
+            "resolved" to false
+        )
+
+        db.collection("alerts").add(alertData)
+            .addOnSuccessListener {
+                Log.d("MonitoringService", "Alerta enviada correctamente")
+            }
+            .addOnFailureListener { e ->
+                Log.e("MonitoringService", "Error al enviar alerta: ${e.message}")
+            }
     }
 
     override fun onCreate() {
@@ -202,6 +230,7 @@ class MonitoringService : Service() {
         startActivity(intent)
     }
 
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         createNotificationChannel()
         startLocationUpdates()
@@ -226,7 +255,12 @@ class MonitoringService : Service() {
             .setOngoing(true)
             .build()
 
-        startForeground(1, notification)
+        // CORRECCIÓN PARA ANDROID 14+: Añadir el tipo de servicio
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            startForeground(1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
+        } else {
+            startForeground(1, notification)
+        }
     }
 
     private fun startLocationUpdates() {

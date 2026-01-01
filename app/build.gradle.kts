@@ -56,6 +56,10 @@ dependencies {
     implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.media3.ui)
     implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.ui.text)
+    implementation(libs.androidx.material3)
 
     // Ferramentas de Debug
     debugImplementation(libs.androidx.compose.ui.tooling)

@@ -29,6 +29,9 @@ class DashboardViewModel : ViewModel() {
     var activeAlerts by mutableStateOf<Map<String, Alert>>(emptyMap())
         private set
     private var alertsListener: ListenerRegistration? = null
+    var isServiceRunning by mutableStateOf(false)
+    var isFirstLoad by mutableStateOf(true)
+    var errorMessage by mutableStateOf<String?>(null)
 
     fun initRole(user: User) {
         if (user.isMonitor && !user.isProtected) {
@@ -277,5 +280,18 @@ class DashboardViewModel : ViewModel() {
                 }
             )
         }
+    }
+    var alertsForSelectedProtected by mutableStateOf<List<Map<String, Any>>>(emptyList())
+
+    fun fetchAlertsForProtected(protectedId: String) {
+        db.collection("alerts")
+            .whereEqualTo("protectedId", protectedId) // Filtramos solo las de este usuario
+            .orderBy("timestamp", com.google.firebase.firestore.Query.Direction.DESCENDING)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+                alertsForSelectedProtected = snapshot?.documents?.map { doc ->
+                    doc.data?.plus("id" to doc.id) ?: emptyMap()
+                } ?: emptyList()
+            }
     }
 }

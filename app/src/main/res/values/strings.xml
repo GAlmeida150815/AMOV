@@ -232,4 +232,20 @@
     <string name="lbl_protected_id">Protected ID: %1$s</string>
     <string name="msg_video_not_found">Video not available</string>
     <string name="lbl_emergency_type">EMERGENCY: %1$s</string>
+    <string name="msg_monitor_notified">Alert sent. Your monitor has been notified.</string>
+    <string name="default_user_name">User</string>
+    <string name="log_monitor_notified_success">Monitor notified of emergency start.</string>
+    <string name="log_monitor_notified_error">Error notifying the monitor</string>
+    <string name="log_recording_error">Recording error</string>
+    <string name="log_camera_error">Camera binding error</string>
+    <string name="log_upload_error">Video upload error</string>
+    <string name="stat_total_alerts">Total Alerts</string>
+    <string name="stat_active_now">Active Now</string>
+    <string name="title_active_alerts">Active Alerts</string>
+    <string name="title_alerts_history">Alert History</string>
+    <string name="msg_no_history_alerts">No alerts in history.</string>
+    <string name="btn_view_video">View Video</string>
+    <string name="btn_resolve">Resolve</string>
+    <string name="title_protected_history">History of %s</string>
+    <string name="lbl_alert_date">Date: %s</string>
 </resources>

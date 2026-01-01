@@ -21,6 +21,10 @@ camerax = "1.3.1"
 guava = "31.1-android"
 media3Ui = "1.9.0"
 media3Exoplayer = "1.9.0"
+runtimeVersion = "1.10.0"
+foundation = "1.10.0"
+uiText = "1.10.0"
+material3 = "1.4.0"
 
 [libraries]
 # Compose
@@ -69,6 +73,10 @@ androidx-camera-extensions = { group = "androidx.camera", name = "camera-extensi
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3Ui" }
 androidx-media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtimeVersion" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
