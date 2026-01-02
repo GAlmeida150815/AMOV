@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -55,6 +56,18 @@ fun MapScreen(
         position = CameraPosition.fromLatLngZoom(defaultLocation, 10f)
     }
     var hasCenteredMap by remember { mutableStateOf(false) }
+    LaunchedEffect(activeUser?.uid) {
+        activeUser?.uid?.let { viewModel.startTrackingUser(it) }
+    }
+
+    // --- MODIFICACIÓN: Mover la cámara automáticamente cuando cambie la ubicación ---
+    LaunchedEffect(activeUser?.location) {
+        activeUser?.location?.let { geo ->
+            cameraPositionState.animate(
+                CameraUpdateFactory.newLatLngZoom(LatLng(geo.latitude, geo.longitude), 15f)
+            )
+        }
+    }
 
     LaunchedEffect(allProtecteds) {
         if (!hasCenteredMap && allProtecteds.isNotEmpty()) {
@@ -64,7 +77,6 @@ fun MapScreen(
                     LatLng(firstWithLoc.location!!.latitude, firstWithLoc.location!!.longitude),
                     12f
                 )
-                hasCenteredMap = true
             }
         }
     }

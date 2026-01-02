@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import pt.isec.amov.tp.enums.MainTab
 import pt.isec.amov.tp.enums.UserRole
+import pt.isec.amov.tp.services.MonitoringService
 import pt.isec.amov.tp.ui.components.RoleSwitchTopBar
 import pt.isec.amov.tp.ui.viewmodel.AuthViewModel
 import pt.isec.amov.tp.ui.viewmodel.DashboardViewModel
@@ -60,6 +61,20 @@ fun MainScreen(
 
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+    val currentRole by dashboardViewModel.currentRole.collectAsState()
+
+    LaunchedEffect(currentRole) {
+        val intent = Intent(context, MonitoringService::class.java)
+        if (currentRole == UserRole.MONITOR) {
+            // Si cambia a monitor, detenemos el servicio por seguridad
+            context.stopService(intent)
+            dashboardViewModel.isServiceRunning = false
+        }
+        // Opcional: Si quieres que se inicie solo al entrar a Protegido
+        // else if (currentRole == UserRole.PROTECTED && dashboardViewModel.isServiceRunning) {
+        //    context.startForegroundService(intent)
+        // }
+    }
 
     if (user == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -71,7 +86,6 @@ fun MainScreen(
     LaunchedEffect(Unit) {
         dashboardViewModel.initRole(user)
     }
-    val currentRole by dashboardViewModel.currentRole.collectAsState()
     val isDualRole = user.isMonitor && user.isProtected
 
     var selectedUserId by remember { mutableStateOf<String?>(null) }

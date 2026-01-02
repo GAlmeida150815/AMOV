@@ -87,6 +87,21 @@ class DashboardViewModel : ViewModel() {
     var alertHistory by mutableStateOf<List<Alert>>(emptyList())
         private set
 
+    var selectedUser by mutableStateOf<User?>(null)
+    private var selectedUserListener: ListenerRegistration? = null
+    fun startTrackingUser(userId: String) {
+        selectedUserListener?.remove()
+        selectedUserListener = db.collection("users").document(userId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) return@addSnapshotListener
+                if (snapshot != null && snapshot.exists()) {
+                    selectedUser = snapshot.toObject(User::class.java)?.apply {
+                        uid = snapshot.id
+                    }
+                }
+            }
+    }
+
     fun loadAlertHistory() {
         val userId = auth.currentUser?.uid ?: return
         db.collection("alerts")
@@ -293,5 +308,10 @@ class DashboardViewModel : ViewModel() {
                     doc.data?.plus("id" to doc.id) ?: emptyMap()
                 } ?: emptyList()
             }
+    }
+    fun resetMonitoringState() {
+        isFirstLoad = true
+        isServiceRunning = false
+        errorMessage = null
     }
 }
