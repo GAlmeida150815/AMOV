@@ -134,7 +134,6 @@ fun DashboardProtectedScreen(
                                     Toast.makeText(context, R.string.msg_monitor_removed, Toast.LENGTH_SHORT).show()
                                 }, {})
                             },
-                            // --- CAMBIO: Abrir el diálogo informativo en lugar del historial ---
                             onClick = {
                                 selectedMonitorForDetails = monitor
                                 Toast.makeText(context, String.format(monitorInfoTemplate, monitor.name), Toast.LENGTH_SHORT).show()

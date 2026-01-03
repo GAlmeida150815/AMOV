@@ -36,7 +36,6 @@ class DashboardViewModel : ViewModel() {
     var isFirstLoad by mutableStateOf(true)
     var errorMessage by mutableStateOf<String?>(null)
 
-    // --- MODIFICACIÓN: Estado para las reglas del propio usuario (modo lectura) ---
     var myRules by mutableStateOf<List<SafetyRule>>(emptyList())
     private var myRulesListener: ListenerRegistration? = null
 
@@ -74,8 +73,6 @@ class DashboardViewModel : ViewModel() {
     fun startListening() {
         val currentUser = authRepo.getCurrentUser() ?: return
         stopListening()
-
-        // --- MODIFICACIÓN: Listener para las reglas del protegido actual ---
         myRulesListener = db.collection("users").document(currentUser.uid)
             .collection("safety_rules")
             .addSnapshotListener { snapshot, _ ->

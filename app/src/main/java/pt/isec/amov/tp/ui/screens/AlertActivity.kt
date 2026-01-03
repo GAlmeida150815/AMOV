@@ -85,7 +85,6 @@ class AlertActivity : ComponentActivity() {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val db = FirebaseFirestore.getInstance()
 
-        // --- CORRECCIÓN: Cálculo de porcentaje real de batería ---
         val batteryStatus: Intent? = registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
         val level = batteryStatus?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
         val scale = batteryStatus?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
@@ -121,7 +120,6 @@ class AlertActivity : ComponentActivity() {
                 cameraProvider.bindToLifecycle(this, CameraSelector.DEFAULT_FRONT_CAMERA, videoCapture)
                 val videoFile = File(externalCacheDir, "alert_${System.currentTimeMillis()}.mp4")
 
-                // --- MANEJO DE GRABACIÓN: Incluye control de errores ---
                 val recordingHandle = videoCapture.output.prepareRecording(this, FileOutputOptions.Builder(videoFile).build())
                     .start(ContextCompat.getMainExecutor(this)) { event ->
                         if (event is VideoRecordEvent.Finalize) {
@@ -205,7 +203,6 @@ fun AlertCountdownScreen(
             modifier = Modifier.padding(24.dp)
         ) {
             if (!isTriggered) {
-                // Textos usando R.string para localización
                 Text(stringResource(R.string.alert_title), style = MaterialTheme.typography.headlineLarge, color = Color.Red, fontWeight = FontWeight.Bold)
                 Text("$timeLeft", fontSize = 100.sp, color = Color.Red, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(24.dp))

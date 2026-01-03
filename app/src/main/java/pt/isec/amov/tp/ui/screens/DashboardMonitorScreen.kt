@@ -86,7 +86,6 @@ fun DashboardMonitorScreen(
         }
     }
 
-    // --- DIÁLOGO QUE APARECE EN TU CAPTURA ---
     if (alertForVideo != null) {
         AlertVideoDialog(
             alert = alertForVideo!!,
@@ -94,7 +93,6 @@ fun DashboardMonitorScreen(
         )
     }
 
-    // --- DIÁLOGO DE HISTORIAL ---
     if (selectedProtected != null) {
         AlertDialog(
             onDismissRequest = { selectedProtected = null },
@@ -149,7 +147,6 @@ fun AlertVideoDialog(alert: Alert, onDismiss: () -> Unit) {
         title = { Text(stringResource(R.string.title_alert_details)) },
         text = {
             Column {
-                // --- CORRECCIÓN: Aquí se muestra el valor real capturado ---
                 Text("${stringResource(R.string.lbl_battery)}: ${alert.batteryLevel}%", fontWeight = FontWeight.Bold)
                 Text("${stringResource(R.string.lbl_type)}: ${alert.type}")
                 Spacer(modifier = Modifier.height(16.dp))

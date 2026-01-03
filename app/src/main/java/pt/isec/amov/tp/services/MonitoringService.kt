@@ -25,8 +25,6 @@ class MonitoringService : Service() {
     private var gpsUpdateCount = 0
     private var lastSpeedKmh = 0.0
 
-    // --- MODIFICACIÓN: Control de enfriamiento (Cooldown) ---
-    // Evita que la alerta se dispare 3 veces seguidas por ráfagas del GPS
     private var lastAlertTimestamp: Long = 0
     private val ALERT_COOLDOWN_MS = 60000 // 1 minuto de espera obligatoria entre alertas
 
@@ -42,7 +40,6 @@ class MonitoringService : Service() {
         db.collection("users").document(uid).update(
             mapOf(
                 "location" to GeoPoint(lat, lng),
-                // --- MODIFICACIÓN: Uso de serverTimestamp ---
                 // Esto arregla el error de que la fecha se quedara fija en "30 de diciembre"
                 "lastUpdate" to FieldValue.serverTimestamp()
             )
@@ -60,7 +57,6 @@ class MonitoringService : Service() {
         }
 
         activeRules.forEach { rule ->
-            // --- MODIFICACIÓN: Validación de Cooldown ---
             // Si ya saltó una alerta hace menos de un minuto, ignoramos el chequeo
             if (System.currentTimeMillis() - lastAlertTimestamp < ALERT_COOLDOWN_MS) return@forEach
 
@@ -90,7 +86,6 @@ class MonitoringService : Service() {
     }
 
     private fun triggerAlertProcess(rule: SafetyRule) {
-        // --- MODIFICACIÓN: Actualizamos el tiempo de última alerta para bloquear repeticiones ---
         lastAlertTimestamp = System.currentTimeMillis()
 
         val intent = Intent(this, AlertActivity::class.java).apply {
