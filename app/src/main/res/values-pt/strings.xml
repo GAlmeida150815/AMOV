@@ -210,4 +210,40 @@
     <string name="title_my_protecteds">Meus Protegidos</string>
     <string name="title_my_rules">Regras de Segurança</string>
     <string name="title_reset_password">Redefinir Palavra-passe</string>
+    <string name="msg_save_success">Configurações guardadas com sucesso</string>
+    <string name="log_rules_updated">Regras atualizadas: %1$d ativas</string>
+    <string name="log_rule_broken">REGRA QUEBRADA: %1$s (Tipo: %2$s)</string>
+
+    <string name="desc_sos">Botão de Pânico SOS</string>
+    <string name="error_recording">Erro de gravação: %1$s</string>
+    <string name="err_camera_binding">Erro ao vincular CameraX</string>
+    <string name="error_upload">Erro de carregamento: %1$s</string>
+    <string name="alert_title">ALERTA DE SEGURANÇA!</string>
+    <string name="alert_cancel_label">Tempo para cancelar:</string>
+    <string name="alert_pin_label">Insira o PIN</string>
+    <string name="alert_sending_msg">A gravar e a enviar alerta…</string>
+
+    <string name="btn_back">Voltar</string>
+    <string name="btn_resolve_ok">TUDO BEM</string>
+    <string name="alert_detail_title">Detalhe de Emergência</string>
+    <string name="lbl_alert_type">TIPO: %1$s</string>
+    <string name="lbl_protected_id">ID Protegido: %1$s</string>
+    <string name="msg_video_not_found">Vídeo não disponível</string>
+    <string name="lbl_emergency_type">EMERGÊNCIA: %1$s</string>
+    <string name="msg_monitor_notified">Alerta enviado. O seu monitor foi notificado.</string>
+    <string name="default_user_name">Usuário</string>
+    <string name="log_monitor_notified_success">Monitor notificado do início da emergência.</string>
+    <string name="log_monitor_notified_error">Erro ao notificar o monitor</string>
+    <string name="log_recording_error">Erro de gravação</string>
+    <string name="log_camera_error">Erro ao ligar a câmara</string>
+    <string name="log_upload_error">Erro ao carregar o vídeo</string>
+    <string name="stat_total_alerts">Alertas Totais</string>
+    <string name="stat_active_now">Ativas Agora</string>
+    <string name="title_active_alerts">Alertas Ativos</string>
+    <string name="title_alerts_history">Histórico de Alertas</string>
+    <string name="msg_no_history_alerts">Não há alertas no histórico.</string>
+    <string name="btn_view_video">Ver Vídeo</string>
+    <string name="btn_resolve">Resolver</string>
+    <string name="title_protected_history">Historial de %s</string>
+    <string name="lbl_alert_date">Fecha: %s</string>
 </resources>

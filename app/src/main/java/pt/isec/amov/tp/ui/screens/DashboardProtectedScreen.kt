@@ -1,59 +1,34 @@
 package pt.isec.amov.tp.ui.screens
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Warning
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import pt.isec.amov.tp.R
 import pt.isec.amov.tp.enums.MainTab
+import pt.isec.amov.tp.model.User
 import pt.isec.amov.tp.services.MonitoringService
-import pt.isec.amov.tp.ui.components.AddMonitorDialog
-import pt.isec.amov.tp.ui.components.EmptyState
-import pt.isec.amov.tp.ui.components.SectionTitle
-import pt.isec.amov.tp.ui.components.UserCard
-import pt.isec.amov.tp.ui.components.WelcomeHeader
+import pt.isec.amov.tp.ui.components.*
 import pt.isec.amov.tp.ui.viewmodel.AuthViewModel
 import pt.isec.amov.tp.ui.viewmodel.DashboardViewModel
+import androidx.core.content.edit
 
 @Composable
 fun DashboardProtectedScreen(
@@ -67,11 +42,41 @@ fun DashboardProtectedScreen(
     val monitors = dashboardViewModel.myMonitors
     val context = LocalContext.current
 
+    val sharedPrefs = remember { context.getSharedPreferences("monitoring_prefs", Context.MODE_PRIVATE) }
+
+    // Usamos el estado del ViewModel para que no se pierda al cambiar de pestaña (Home -> Profile)
+    val isServiceRunning = dashboardViewModel.isServiceRunning
+
+    // Cargamos el valor guardado solo la primera vez que se crea la pantalla
+    LaunchedEffect(Unit) {
+        if (dashboardViewModel.isFirstLoad) {
+            dashboardViewModel.isServiceRunning = sharedPrefs.getBoolean("is_service_active", false)
+            dashboardViewModel.isFirstLoad = false
+        }
+        dashboardViewModel.startListening()
+    }
+    val errorMsg = dashboardViewModel.errorMessage
+    LaunchedEffect(errorMsg) {
+        errorMsg?.let {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            dashboardViewModel.errorMessage = null // Limpiamos para que no salga repetido
+        }
+    }
+
+    LaunchedEffect(isServiceRunning) {
+        if (isServiceRunning) {
+            val intent = Intent(context, MonitoringService::class.java)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
+        }
+    }
+
     // --- State Variables ---
     var showLinkDialog by remember { mutableStateOf(false) }
-
-    // --- GPS State ---
-    var isServiceRunning by remember { mutableStateOf(false) }
+    var selectedUserForAlerts by remember { mutableStateOf<User?>(null) } // Para el diálogo de historial
 
     // --- Permissions & Launcher ---
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -81,48 +86,22 @@ fun DashboardProtectedScreen(
         val coarse = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
 
         if (fine || coarse) {
-            val intent = Intent(context, MonitoringService::class.java)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                context.startForegroundService(intent)
-            } else {
-                context.startService(intent)
-            }
-
-            isServiceRunning = true
-            Toast.makeText(
-                context,
-                context.getString(R.string.msg_monitor_started),
-                Toast.LENGTH_SHORT
-            ).show()
+            dashboardViewModel.isServiceRunning = true
+            sharedPrefs.edit { putBoolean("is_service_active", true) }
+            Toast.makeText(context, R.string.msg_monitor_started, Toast.LENGTH_SHORT).show()
         } else {
-            Toast.makeText(
-                context,
-                context.getString(R.string.msg_perm_location_required),
-                Toast.LENGTH_LONG
-            ).show()
+            Toast.makeText(context, R.string.msg_perm_location_required, Toast.LENGTH_LONG).show()
         }
     }
 
-    // --- Data Listener (Associações) ---
-    LaunchedEffect(Unit) {
-        dashboardViewModel.startListening()
-    }
-
-    // --- Landscape Orientation ---
-    //val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
-
     Scaffold { padding ->
-
         Column(
-
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
                 .padding(16.dp)
         ) {
-            // --- Header ---
             WelcomeHeader(user?.name)
-
             Spacer(modifier = Modifier.height(24.dp))
 
             // --- Localization Monitoring Card ---
@@ -139,16 +118,12 @@ fun DashboardProtectedScreen(
                 ) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = if (isServiceRunning) stringResource(R.string.lbl_monitoring_active) else stringResource(
-                                R.string.lbl_monitoring_paused
-                            ),
+                            text = if (isServiceRunning) stringResource(R.string.lbl_monitoring_active) else stringResource(R.string.lbl_monitoring_paused),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = if (isServiceRunning) stringResource(R.string.msg_sharing_location) else stringResource(
-                                R.string.msg_not_sharing_location
-                            ),
+                            text = if (isServiceRunning) stringResource(R.string.msg_sharing_location) else stringResource(R.string.msg_not_sharing_location),
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -157,41 +132,21 @@ fun DashboardProtectedScreen(
                         checked = isServiceRunning,
                         onCheckedChange = { shouldStart ->
                             if (shouldStart) {
-                                // --- Check Permissions ---
                                 permissionLauncher.launch(
-                                    arrayOf(
-                                        Manifest.permission.ACCESS_FINE_LOCATION,
-                                        Manifest.permission.ACCESS_COARSE_LOCATION
-                                    )
+                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                                 )
                             } else {
-                                // --- Stop Service ---
                                 val intent = Intent(context, MonitoringService::class.java)
                                 context.stopService(intent)
-                                isServiceRunning = false
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.msg_monitor_stopped),
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                dashboardViewModel.isServiceRunning = false
+                                sharedPrefs.edit { putBoolean("is_service_active", false) }
+                                Toast.makeText(context, R.string.msg_monitor_stopped, Toast.LENGTH_SHORT).show()
                             }
                         },
                         modifier = Modifier.scale(1.2f)
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // 1. EL BOTÓN DEBE SER INDEPENDIENTE
-            OutlinedButton(
-                onClick = { onNavigate(MainTab.PRIVACY, null) },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                // Solo esto va dentro del botón
-                Text(text = stringResource(R.string.lbl_time_window))
-            }
-
-            // 2. EL RESTO VA FUERA DEL BOTÓN (En la Column principal)
             Spacer(modifier = Modifier.height(32.dp))
 
             // --- Monitor List ---
@@ -202,22 +157,14 @@ fun DashboardProtectedScreen(
             ) {
                 SectionTitle(stringResource(R.string.title_my_monitors))
                 IconButton(onClick = { showLinkDialog = true }) {
-                    Icon(
-                        Icons.Default.Add,
-                        stringResource(R.string.title_add_monitor),
-                        tint = MaterialTheme.colorScheme.primary
-                    )
+                    Icon(Icons.Default.Add, null, tint = MaterialTheme.colorScheme.primary)
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // La lógica de la lista también fuera
             if (monitors.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize().weight(1f),
-                    contentAlignment = Alignment.Center
-                ) {
+                Box(modifier = Modifier.fillMaxSize().weight(1f), contentAlignment = Alignment.Center) {
                     EmptyState(stringResource(R.string.msg_no_monitors))
                 }
             } else {
@@ -231,14 +178,15 @@ fun DashboardProtectedScreen(
                                     otherUserId = monitor.uid,
                                     amIMonitor = false,
                                     onSuccess = {
-                                        Toast.makeText(context, context.getString(R.string.msg_monitor_removed), Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(context, R.string.msg_monitor_removed, Toast.LENGTH_SHORT).show()
                                     },
-                                    onFailure = { error ->
-                                        Toast.makeText(context, "Error: $error", Toast.LENGTH_LONG).show()
+                                    onFailure = { errorMsg ->
+                                        dashboardViewModel.errorMessage = errorMsg
                                     }
                                 )
                             },
-                            onClick = { onNavigate(MainTab.CONNECTIONS, monitor.uid) }
+
+                            onClick = { selectedUserForAlerts = monitor }
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                     }
@@ -246,20 +194,23 @@ fun DashboardProtectedScreen(
             }
         }
 
+        if (selectedUserForAlerts != null) {
+            AlertsDetailDialog(
+                protectedId = selectedUserForAlerts!!.uid,
+                protectedName = selectedUserForAlerts!!.name,
+                viewModel = dashboardViewModel,
+                onDismiss = { }
+            )
+        }
+
         if (showLinkDialog) {
             AddMonitorDialog(
                 viewModel = dashboardViewModel,
-                onDismiss = { showLinkDialog = false },
+                onDismiss = { },
                 onSuccess = {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.assoc_success),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    showLinkDialog = false
+                    Toast.makeText(context, R.string.assoc_success, Toast.LENGTH_SHORT).show()
                 }
             )
         }
     }
 }
-

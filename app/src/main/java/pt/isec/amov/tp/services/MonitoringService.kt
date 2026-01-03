@@ -1,208 +1,193 @@
 package pt.isec.amov.tp.services
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-import android.app.Service
-import android.content.Context
-import android.content.Intent
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
+import android.app.*
+import android.content.*
+import android.hardware.*
 import android.location.Location
-import android.os.BatteryManager
-import android.os.Build
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
+import com.google.android.gms.location.*
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.GeoPoint
-import com.google.firebase.firestore.ListenerRegistration
-import com.google.firebase.firestore.auth.User
+import com.google.firebase.firestore.*
 import pt.isec.amov.tp.R
 import pt.isec.amov.tp.enums.RuleType
 import pt.isec.amov.tp.model.SafetyRule
 import pt.isec.amov.tp.ui.screens.AlertActivity
-import java.util.Calendar
-import kotlin.math.abs
-import kotlin.math.sqrt
+import kotlin.math.*
 
 class MonitoringService : Service() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var sensorManager: SensorManager
     private var accelerometer: Sensor? = null
-
     private var activeRules: List<SafetyRule> = emptyList()
     private var rulesListener: ListenerRegistration? = null
-    private var lastMovementTime: Long = System.currentTimeMillis()
-    private var lastSpeedKmh = 0.0
-
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    private val lastAlertTime = mutableMapOf<String, Long>()
+    private var lastSpeedKmh = 0.0
+    private var lastMovementLocation: Location? = null
+    private var lastMovementTimestamp: Long = System.currentTimeMillis()
+    private var currentUserId: String? = null
+    private var serviceStartTime: Long = 0
+    private val WARM_UP_PERIOD = 10000L
+    private var gpsUpdateCount = 0
+    private val MIN_GPS_FIXES = 3
+
     private val sensorListener = object : SensorEventListener {
         override fun onSensorChanged(event: SensorEvent) {
+            if (System.currentTimeMillis() - serviceStartTime < WARM_UP_PERIOD) return
             if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                val x = event.values[0]
-                val y = event.values[1]
-                val z = event.values[2]
+                val magnitude = sqrt((event.values[0].pow(2) + event.values[1].pow(2) + event.values[2].pow(2)).toDouble()).toFloat()
 
-                val magnitude = sqrt((x * x + y * y + z * z).toDouble()).toFloat()
-
-                if (magnitude > 25f) {
-                    val fallRule = activeRules.find { it.type == RuleType.FALL_DETECTION }
-                    if (fallRule != null && fallRule.shouldCheckNow()) {
-                        triggerAlertProcess(fallRule)
-                    }
-                }
-
-                if (abs(magnitude - 9.81f) > 0.5f) {
-                    lastMovementTime = System.currentTimeMillis()
-                } else {
-                    val inactivityRule = activeRules.find { it.type == RuleType.INACTIVITY }
-                    if (inactivityRule != null && inactivityRule.shouldCheckNow()) {
-                        val maxMinutes = (inactivityRule.params["duration"] as? Number)?.toLong() ?: 15L
-                        if ((System.currentTimeMillis() - lastMovementTime) > (maxMinutes * 60000)) {
-                            triggerAlertProcess(inactivityRule)
-                            lastMovementTime = System.currentTimeMillis()
-                        }
+                if (magnitude > 18f) {
+                    activeRules.find { it.type == RuleType.FALL_DETECTION }?.let {
+                        if (it.shouldCheckNow()) triggerAlertProcess(it)
                     }
                 }
             }
         }
-        override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        override fun onAccuracyChanged(s: Sensor?, a: Int) {}
+    }
+
+    private fun triggerAlertProcess(rule: SafetyRule) {
+        val userId = currentUserId ?: return
+
+        db.collection("users").document(userId).get().addOnSuccessListener { document ->
+            val isProtected = document.getBoolean("protected") ?: false
+
+            if (isProtected) {
+                val now = System.currentTimeMillis()
+                val lastTime = lastAlertTime[rule.type.name] ?: 0L
+
+                // Cooldown para evitar spam de alertas (60 segundos)
+                if (now - lastTime < 60000) return@addOnSuccessListener
+                lastAlertTime[rule.type.name] = now
+
+                Log.w("MonitoringService", "Situación de alerta detectada: ${rule.type.name}")
+
+                val intent = Intent(this, AlertActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                    putExtra("RULE_TYPE", rule.type.name)
+                    putExtra("RULE_ID", rule.id)
+                }
+                startActivity(intent)
+            }
+        }
     }
 
     private val locationCallback = object : LocationCallback() {
-        override fun onLocationResult(locationResult: LocationResult) {
-            locationResult.lastLocation?.let { location ->
+        override fun onLocationResult(res: LocationResult) {
+            res.lastLocation?.let { location ->
                 updateFirestoreLocation(location.latitude, location.longitude)
                 checkSecurityRules(location)
             }
         }
     }
 
+    private fun checkSecurityRules(location: Location) {
+        gpsUpdateCount++
+        if (gpsUpdateCount <= MIN_GPS_FIXES) {
+            lastSpeedKmh = location.speed * 3.6
+            lastMovementLocation = location
+            lastMovementTimestamp = System.currentTimeMillis()
+            return
+        }
+        val currentSpeedKmh = location.speed * 3.6
+
+        activeRules.forEach { rule ->
+            if (!rule.shouldCheckNow()) return@forEach
+
+            when (rule.type) {
+                // 1. CONTROL DE VELOCIDAD
+                RuleType.SPEED_LIMIT -> {
+                    val max = (rule.params["max_speed"] as? Number)?.toDouble() ?: 120.0
+                    if (currentSpeedKmh > max) triggerAlertProcess(rule)
+                }
+
+                // 2. GEOFENCING (SALIDA DE PERÍMETRO)
+                RuleType.GEOFENCING -> {
+                    val centerLat = (rule.params["lat"] as? Number)?.toDouble() ?: 0.0
+                    val centerLng = (rule.params["lng"] as? Number)?.toDouble() ?: 0.0
+                    val radius = (rule.params["radius"] as? Number)?.toDouble() ?: 100.0
+
+                    val results = FloatArray(1)
+                    Location.distanceBetween(location.latitude, location.longitude, centerLat, centerLng, results)
+                    val distanceInMeters = results[0]
+
+                    if (distanceInMeters > radius) {
+                        triggerAlertProcess(rule)
+                    }
+                }
+
+                // 3. ACCIDENTE (DESACELERACIÓN SÚBITA)
+                RuleType.CAR_ACCIDENT -> {
+                    // Detecta una caída brusca de velocidad (ej: 30 km/h en 1 segundo)
+                    val decelerationThreshold = 20.0
+                    if ((lastSpeedKmh - currentSpeedKmh) > decelerationThreshold) {
+                        triggerAlertProcess(rule)
+                    }
+                }
+
+                // 4. INACTIVIDAD PROLONGADA
+                RuleType.INACTIVITY -> {
+                    val durationMin = (rule.params["duration"] as? Number)?.toLong() ?: 30L
+                    val durationMs = durationMin * 60 * 1000
+
+                    // Consideramos "movimiento" si se ha desplazado más de 5 metros
+                    val distanceResult = FloatArray(1)
+                    lastMovementLocation?.let {
+                        Location.distanceBetween(location.latitude, location.longitude, it.latitude, it.longitude, distanceResult)
+                    }
+
+                    if (lastMovementLocation == null || distanceResult[0] > 5.0) {
+                        // Si hay movimiento, reseteamos el temporizador
+                        lastMovementLocation = location
+                        lastMovementTimestamp = System.currentTimeMillis()
+                    } else {
+                        // Si no hay movimiento, comprobamos cuánto tiempo ha pasado
+                        if (System.currentTimeMillis() - lastMovementTimestamp > durationMs) {
+                            triggerAlertProcess(rule)
+                        }
+                    }
+                }
+                else -> {}
+            }
+        }
+
+        // Actualizamos la última velocidad para la siguiente comparación de accidentes
+        lastSpeedKmh = currentSpeedKmh
+    }
+
     override fun onCreate() {
         super.onCreate()
+        serviceStartTime = System.currentTimeMillis()
+        gpsUpdateCount = 0
+        currentUserId = auth.currentUser?.uid
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-
-        accelerometer?.let {
-            sensorManager.registerListener(sensorListener, it, SensorManager.SENSOR_DELAY_NORMAL)
-        }
+        val acc = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        sensorManager.registerListener(sensorListener, acc, SensorManager.SENSOR_DELAY_GAME)
 
         startListeningToRules()
     }
 
     private fun startListeningToRules() {
-        val userId = auth.currentUser?.uid ?: return
-
-        rulesListener = db.collection("users").document(userId)
-            .collection("safety_rules")
+        val userId = currentUserId ?: return
+        rulesListener = db.collection("users").document(userId).collection("safety_rules")
             .whereEqualTo("authorized", true)
-            .addSnapshotListener { snapshot, e ->
-                if (e != null) {
-                    Log.e("MonitoringService", "Erro ao ler regras: $e")
-                    return@addSnapshotListener
-                }
-
-                if (snapshot != null) {
-                    activeRules = snapshot.toObjects(SafetyRule::class.java)
-                    Log.d("MonitoringService", "Regras atualizadas: ${activeRules.size} ativas")
-                }
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) activeRules = snapshot.toObjects(SafetyRule::class.java)
             }
     }
 
-    private fun checkSecurityRules(location: Location) {
-        // 1. Convertir la velocidad actual de m/s a km/h para las comparaciones
-        val currentSpeedKmh = location.speed * 3.6
-
-        // 2. Calcular la caída de velocidad (deceleración brusca)
-        val speedDrop = lastSpeedKmh - currentSpeedKmh
-        for (rule in activeRules) {
-            // Solo procesar si la regla está autorizada y dentro de la ventana temporal [cite: 22, 25]
-            if (!rule.shouldCheckNow()) continue
-            when (rule.type) {
-                RuleType.SPEED_LIMIT -> {
-                    // Regla: Control de velocidad excesiva
-                    val maxSpeed = (rule.params["max_speed"] as? Number)?.toDouble() ?: 120.0
-                    if (currentSpeedKmh > maxSpeed) {
-                        triggerAlertProcess(rule)
-                    }
-                }
-                RuleType.CAR_ACCIDENT -> {
-                    // Regla: Detección de accidentes de carretera por deceleración
-                    // Se dispara si la velocidad baja más de 25 km/h en un solo intervalo (aprox. 2s)
-                    // y el usuario circulaba previamente a más de 30 km/h
-                    if (speedDrop > 25.0 && lastSpeedKmh > 30.0) {
-                        triggerAlertProcess(rule)
-                    }
-                }
-
-                RuleType.GEOFENCING -> {
-                    // Regla: El usuario está fuera del área definida
-                    checkGeofence(rule, location)
-                }
-
-                else -> { /* Otras reglas como FALL o INACTIVITY se manejan por sensores  */ }
-            }
-        }
-        lastSpeedKmh = currentSpeedKmh
+    private fun updateFirestoreLocation(lat: Double, lng: Double) {
+        val userId = currentUserId ?: return
+        db.collection("users").document(userId).update(mapOf("location" to GeoPoint(lat, lng)))
     }
 
-    private fun checkGeofence(rule: SafetyRule, currentLocation: Location) {
-        val centerLat = (rule.params["lat"] as? Number)?.toDouble() ?: return
-        val centerLng = (rule.params["lng"] as? Number)?.toDouble() ?: return
-        val radius = (rule.params["radius"] as? Number)?.toDouble() ?: return
-
-        val centerLoc = Location("provider").apply {
-            latitude = centerLat
-            longitude = centerLng
-        }
-        val distanceInMeters = currentLocation.distanceTo(centerLoc)
-
-        if (distanceInMeters > radius) {
-            triggerAlertProcess(rule)
-        }
-    }
-
-    private fun checkSpeed(rule: SafetyRule, currentLocation: Location) {
-        val maxSpeedKmh = (rule.params["max_speed"] as? Number)?.toDouble() ?: return
-        val currentSpeedKmh = currentLocation.speed * 3.6
-
-        if (currentSpeedKmh > maxSpeedKmh) {
-            triggerAlertProcess(rule)
-        }
-    }
-
-    private fun checkBatteryLevel(): Int {
-        val batteryManager = getSystemService(BATTERY_SERVICE) as BatteryManager
-        return batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-    }
-
-    private fun triggerAlertProcess(rule: SafetyRule) {
-        Log.w("MonitoringService", "REGRA QUEBRADA: ${rule.name} (Tipo: ${rule.type})")
-
-        val intent = Intent(this, AlertActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-            putExtra("RULE_ID", rule.id)
-            putExtra("RULE_TYPE", rule.type.name)
-        }
-        startActivity(intent)
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+    override fun onStartCommand(i: Intent?, f: Int, s: Int): Int {
         createNotificationChannel()
         startLocationUpdates()
         return START_STICKY
@@ -211,52 +196,21 @@ class MonitoringService : Service() {
     private fun createNotificationChannel() {
         val channelId = "monitoring_channel"
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                channelId,
-                getString(R.string.notif_channel_name),
-                NotificationManager.IMPORTANCE_LOW
-            )
-            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+            val chan = NotificationChannel(channelId, "Safety Tracking", NotificationManager.IMPORTANCE_LOW)
+            getSystemService(NotificationManager::class.java).createNotificationChannel(chan)
         }
-
-        val notification: Notification = NotificationCompat.Builder(this, channelId)
-            .setContentTitle(getString(R.string.notif_title_protected))
-            .setContentText(getString(R.string.notif_content_tracking))
-            .setSmallIcon(R.drawable.ic_logo_safetysec)
-            .setOngoing(true)
-            .build()
-
-        startForeground(1, notification)
+        val notif = NotificationCompat.Builder(this, channelId)
+            .setContentTitle("Monitoring Active").setSmallIcon(R.drawable.ic_logo_safetysec).build()
+        startForeground(1, notif)
     }
 
     private fun startLocationUpdates() {
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 5000).apply {
-            setMinUpdateIntervalMillis(2000)
-            setWaitForAccurateLocation(false)
-        }.build()
-
-        try {
-            fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
-        } catch (e: SecurityException) {
-            stopSelf()
-        }
+        val req = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1500).build()
+        try { fusedLocationClient.requestLocationUpdates(req, locationCallback, Looper.getMainLooper()) } catch (e: SecurityException) {}
     }
-
-    private fun updateFirestoreLocation(lat: Double, lng: Double) {
-        val batteryLevel = checkBatteryLevel()
-        val user = auth.currentUser ?: return
-        val updates = mapOf(
-            "location" to GeoPoint(lat, lng),
-            "batteryLevel" to batteryLevel,
-            "lastUpdate" to com.google.firebase.Timestamp.now()
-        )
-        db.collection("users").document(user.uid).update(updates)
-    }
-
 
     override fun onDestroy() {
         super.onDestroy()
-        fusedLocationClient.removeLocationUpdates(locationCallback)
         sensorManager.unregisterListener(sensorListener)
         rulesListener?.remove()
     }

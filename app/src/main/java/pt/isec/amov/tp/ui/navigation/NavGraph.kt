@@ -58,6 +58,7 @@ fun SetupNavGraph(navController: NavHostController) {
                 dashboardViewModel = dashboardViewModel,
                 rulesViewModel = rulesViewModel,
                 onLogout = {
+                    dashboardViewModel.resetMonitoringState()
                     authViewModel.logout()
                     navController.navigate(Screen.Login.route) {
                         popUpTo(0)

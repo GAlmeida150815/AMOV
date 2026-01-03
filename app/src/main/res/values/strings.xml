@@ -212,4 +212,40 @@
     <string name="title_my_protecteds">My Protecteds</string>
     <string name="title_my_rules">Safety Rules</string>
     <string name="title_reset_password">Reset Password</string>
+    <string name="msg_save_success">Settings saved successfully</string>
+    <string name="log_rules_updated">Rules updated: %1$d active</string>
+    <string name="log_rule_broken">RULE BROKEN: %1$s (Type: %2$s)</string>
+
+    <string name="desc_sos">SOS Panic Button</string>
+    <string name="error_recording">Recording error: %1$s</string>
+    <string name="err_camera_binding">Error binding CameraX</string>
+    <string name="error_upload">Upload error: %1$s</string>
+    <string name="alert_title">SECURITY ALERT!</string>
+    <string name="alert_cancel_label">Time to cancel:</string>
+    <string name="alert_pin_label">Enter PIN</string>
+    <string name="alert_sending_msg">Recording and sending alert…</string>
+
+    <string name="btn_back">Back</string>
+    <string name="btn_resolve_ok">ALL OK</string>
+    <string name="alert_detail_title">Emergency Detail</string>
+    <string name="lbl_alert_type">TYPE: %1$s</string>
+    <string name="lbl_protected_id">Protected ID: %1$s</string>
+    <string name="msg_video_not_found">Video not available</string>
+    <string name="lbl_emergency_type">EMERGENCY: %1$s</string>
+    <string name="msg_monitor_notified">Alert sent. Your monitor has been notified.</string>
+    <string name="default_user_name">User</string>
+    <string name="log_monitor_notified_success">Monitor notified of emergency start.</string>
+    <string name="log_monitor_notified_error">Error notifying the monitor</string>
+    <string name="log_recording_error">Recording error</string>
+    <string name="log_camera_error">Camera binding error</string>
+    <string name="log_upload_error">Video upload error</string>
+    <string name="stat_total_alerts">Total Alerts</string>
+    <string name="stat_active_now">Active Now</string>
+    <string name="title_active_alerts">Active Alerts</string>
+    <string name="title_alerts_history">Alert History</string>
+    <string name="msg_no_history_alerts">No alerts in history.</string>
+    <string name="btn_view_video">View Video</string>
+    <string name="btn_resolve">Resolve</string>
+    <string name="title_protected_history">History of %s</string>
+    <string name="lbl_alert_date">Date: %s</string>
 </resources>
