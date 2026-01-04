@@ -11,7 +11,7 @@ data class Alert(
     val id: String = "",
 
     val ruleId: String? = null,
-    val type: RuleType = RuleType.PANIC_BUTTON,
+    val type: String = RuleType.PANIC_BUTTON.name,
 
     val protectedId: String = "",
 

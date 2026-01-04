@@ -246,4 +246,17 @@
     <string name="btn_resolve">Resolver</string>
     <string name="title_protected_history">Historial de %s</string>
     <string name="lbl_alert_date">Fecha: %s</string>
+    <string name="lbl_rules_by_monitor">Regras configuradas por este monitor:</string>
+    <string name="msg_only_monitor_can_modify">* Apenas o seu monitor pode modificar estas regras.</string>
+    <string name="msg_no_rules_active">Nenhuma regra configurada no momento.</string>
+    <string name="msg_monitor_profile_info">Informação do monitor: %s</string>
+    <string name="btn_all_ok">Tudo bem</string>
+    <string name="btn_view_details">Ver detalhes</string>
+    <string name="msg_alert_resolved">Alerta resolvido com sucesso</string>
+    <string name="msg_video_uploading">Enviando vídeo do dispositivo...</string>
+    <string name="title_alert_details">Detalhes da Emergência</string>
+    <string name="lbl_type">Tipo de alerta</string>
+    <string name="sect_history">Histórico de Alertas</string>
+    <string name="msg_click_to_view_video">Pressione para ver detalhes e vídeo</string>
+    <string name="lbl_urgent">URGENTE</string>
 </resources>
